@@ -1,0 +1,25 @@
+name: Build/Run Docker Image on Merge
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Build and run Docker Compose
+        run: docker-compose up --exit-code-from app
+      - name: Test Results
+        run: |
+          if [ $? -eq 0 ]; then
+            echo "Tests passed"
+          else
+            echo "Tests failed"
+            exit 1
+          fi

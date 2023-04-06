@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "mcqbot"
+version = "0.1.0"
+description = "Multiple choice question generator"
+authors = ["nickynw"]
+license = "None"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+isort = "^5.12.0"
+blue = "^0.9.1"
+pylint = "^2.17.2"
+mypy = "^1.1.1"
+pytest = "^7.2.2"
+fastapi = "^0.95.0"
+uvicorn = {extras = ["standard"], version = "^0.21.1"}
+httpx = "^0.23.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+src_paths = ["src", "test"]
