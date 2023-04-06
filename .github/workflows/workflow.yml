@@ -28,7 +28,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m poetry install isort blue mypy pylint pytest
+        poetry install --with code_audit
 
     - name: Assess imports with isort
       uses: isort/isort-action@master
