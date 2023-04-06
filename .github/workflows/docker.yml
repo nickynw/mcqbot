@@ -2,8 +2,6 @@ name: Build/Run Docker Image on Merge
 on:
   pull_request:
     types: [opened, reopened]
-    branches:
-      - main
 jobs:
   build-and-run:
     runs-on: ubuntu-latest
