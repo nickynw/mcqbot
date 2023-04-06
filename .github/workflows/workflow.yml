@@ -28,7 +28,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        poetry install --with code_audit
+        poetry install --group code_audit
 
     - name: Assess imports with isort
       uses: isort/isort-action@master
