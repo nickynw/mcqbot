@@ -1,5 +1,5 @@
 """A test to prevent exit code 5 in pytest runs on push."""
-#pylint: disable=unspecified-encoding
+# pylint: disable=unspecified-encoding
 from pathlib import Path
 
 
