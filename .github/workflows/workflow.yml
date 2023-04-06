@@ -1,4 +1,5 @@
 run-name: ${{ github.actor }} ${{ github.event_name }} for ${{ github.repository }}/${{ github.ref }} id ${{ github.run_id }}
+name: Code Audit
 on: [push]
 jobs:
   build:
