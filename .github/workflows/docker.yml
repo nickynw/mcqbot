@@ -1,13 +1,11 @@
 name: Build/Run Docker Image on Merge
 on:
   pull_request:
-    types: [closed]
-    branches:
-      - main
+    types: [opened, reopened, synchronize]
 jobs:
   build-and-run:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+    if: github.event.pull_request.base.ref == 'main'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
