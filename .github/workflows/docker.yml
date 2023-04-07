@@ -5,7 +5,7 @@ on:
 jobs:
   build-and-run:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.base.ref == 'main'
+    if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -21,7 +21,3 @@ jobs:
             echo "Tests failed"
             exit 1
           fi
-    if: github.event_name == 'push'
-    steps:
-      - name: Skip docker build on push
-        run: exit 0
