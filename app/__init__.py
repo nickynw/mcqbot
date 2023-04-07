@@ -1,1 +1,1 @@
-"init in app folder"
+"""init in app folder"""
