@@ -20,7 +20,6 @@ class FakeWordGenerator:
 
     def __init__(self, words: List[str]):
         self.pool = words
-        self.used = []
         self.second_parts = [
             x[1]
             for x in list(
@@ -105,7 +104,9 @@ class FakeWordGenerator:
 
         return pairs if len(pairs) > 0 else [(word, '')]
 
-    def __find_match(self, fake_words: Generator, threshold: float) -> Generator:
+    def __find_match(
+        self, fake_words: Generator, threshold: float
+    ) -> Generator:
         """
         A generator that yields a generated fake word above a similarity score threshold when compared to all original input words.
         Generators are used to iterate over possible permutations without loading all of them into memory at once.
@@ -125,10 +126,15 @@ class FakeWordGenerator:
         random.shuffle(self.pool)
 
         for fake_word, word in itertools.product(fake_words, self.pool):
-            if FakeWordGenerator.__similarity_score(fake_word, word) > threshold:
+            if (
+                FakeWordGenerator.__similarity_score(fake_word, word)
+                > threshold
+            ):
                 yield fake_word
 
-    def generate(self, limit: int = 1, threshold: float = 0.6) -> Dict[str, str]:
+    def generate(
+        self, limit: int = 1, threshold: float = 0.6
+    ) -> Dict[str, str]:
         """
         Given a set of input words and n, generate n number of new fake words with a similarity score higher than the threshold to any of the original words.
 
@@ -139,7 +145,9 @@ class FakeWordGenerator:
             output (Dict[str, Union[str, None]]): A dictionary with the original word and the first plausible fake word generated for it if at all possible
         """
         output = {}
-        sample = random.sample(self.pool, limit if limit < len(self.pool) else len(self.pool))
+        sample = random.sample(
+            self.pool, limit if limit < len(self.pool) else len(self.pool)
+        )
 
         for random_word in sample:
             random.shuffle(self.second_parts)
@@ -156,8 +164,8 @@ class FakeWordGenerator:
             )
 
             fake_word = next(
-                    (x for x in self.__find_match(potential_words, threshold)),
-                    None,
+                (x for x in self.__find_match(potential_words, threshold)),
+                None,
             )
             if fake_word:
                 output[random_word] = fake_word
