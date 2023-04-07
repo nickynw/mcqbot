@@ -32,7 +32,9 @@ jobs:
         poetry install --with "code_audit"
 
     - name: Assess imports with isort
-      uses: isort/isort-action@master
+      if: always()
+      run: |
+        poetry run isort $(git ls-files '*.py')
 
     - name: Assess static typing with mypy
       if: always()
