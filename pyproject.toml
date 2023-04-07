@@ -11,6 +11,8 @@ python = "^3.9"
 fastapi = "^0.95.0"
 uvicorn = {extras = ["standard"], version = "^0.21.1"}
 httpx = "^0.23.3"
+levenshtein = "^0.20.9"
+pyphen = "^0.14.0"
 
 
 [tool.poetry.group.code_audit.dependencies]
