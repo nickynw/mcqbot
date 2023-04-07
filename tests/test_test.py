@@ -1,4 +1,4 @@
-"""A test to prevent exit code 5 in pytest runs on push."""
+"""A basic test that always passes"""
 
 
 def test_test():
