@@ -12,7 +12,7 @@ class MCQGenerator:
     An edge is chosen (e.g. Sam -> Person), Sam is an 'answer', Person is a 'topic', all other valid answers are found and excluded.
     Then similar nodes that share qualities with those answers are gathered as the 'distractors'.
     Nodes are also pooled and if possible fake blended words are created from those too.
-    
+
     """
 
     def __init__(self, graph: nx.DiGraph):
@@ -53,10 +53,10 @@ class MCQGenerator:
             Dict[str, Union[str, List[str]]]:
         """
         topic, answer = random.choice(self.edges)
-        answers, distractors = self.__collect_nodes(answer = answer, topic = topic)
+        answers, distractors = self.__collect_nodes(answer=answer, topic=topic)
 
         # create a fake blended word
-        fwg = FakeWordGenerator(pool = answers + distractors)
+        fwg = FakeWordGenerator(pool=answers + distractors)
         fake = fwg.generate(filter_list=[answer] + distractors, limit=1).pop()
 
         # shuffle the answer, distractors and fakes
