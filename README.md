@@ -2,7 +2,7 @@
 
 #### Description
 
-MCQBOT is a simple practical project that I developed to demonstrate my proficiency in software engineering, with attention to modular design, version control, OOP, automated testing, continuous development and code quality. This project is a website that generates multiple-choice questions (MCQs) from a graph database, making it useful template for educators, trainers, or anyone who needs to create quizzes quickly. This project showcases my skills in problem-solving, algorithm design, programming, and software development methodologies."
+MCQBOT is a simple practical project that I developed to demonstrate my proficiency in software engineering, with attention to modular design, version control, OOP, automated testing, continuous development and code quality. I also aim to showcase my skills in problem-solving, algorithm design, data engineering and solution architecture. This project itself is a website that generates multiple-choice questions (MCQs) from a graph database, aiming to provide a template for people to product tests quickly and easily. 
 
 ### Modular Design
 
@@ -37,3 +37,13 @@ A formatter that enforces PEP8 conventions, improving code readability and maint
 
 #### pylint
 A static code analysis tool for Python that checks for programming errors, enforces coding standards, and provides suggestions for improving code quality and maintainability.
+
+
+### Problem Solving and Algorithm Design
+
+One of the problems I have been looking at is how to produce plausible fake words using a list of input words. A huge number of permutations are produced via generators for memory efficiency, which are benchmarked against existing words using levenstein word distance to maintain plausability.
+
+### Data Engineering and Solution Architecture
+
+At the moment there is a graph object used to represent the data, hopefully I will update this to have a graph database involved as well as another database to store information on test results. A lot more to come here as the project progresses.
+I'm thinking python API / Front-end / Graph Database / SQL Database at the moment.
