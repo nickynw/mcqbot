@@ -1,10 +1,8 @@
-"""
-This module contains code for a FakeWordGenerator, which aims to generate plausible fake words.
-It achieves this by hyphenating an input list of words and generating permutations that are similar to the input words.
-"""
+"""A utility module for MCQBot"""
+
 import itertools
 import random
-from typing import Dict, Generator, List, Tuple
+from typing import Generator, List, Tuple, Union
 
 import Levenshtein
 import pyphen
@@ -12,7 +10,8 @@ import pyphen
 
 class FakeWordGenerator:
     """
-    A Fake Word Generating class, you can use the class method generate without instantiating an object.
+    This module contains code for a FakeWordGenerator, which aims to generate plausible fake words.
+    It achieves this by hyphenating an input list of words and generating permutations that are similar to the input words.
     """
 
     dic_US = pyphen.Pyphen(lang='en_US')
@@ -105,7 +104,7 @@ class FakeWordGenerator:
         return pairs if len(pairs) > 0 else [(word, '')]
 
     def __find_match(
-        self, fake_words: Generator, threshold: float
+        self, potential_fakes: Generator, threshold: float
     ) -> Generator:
         """
         A generator that yields a generated fake word above a similarity score threshold when compared to all original input words.
@@ -125,7 +124,7 @@ class FakeWordGenerator:
 
         random.shuffle(self.pool)
 
-        for fake_word, word in itertools.product(fake_words, self.pool):
+        for fake_word, word in itertools.product(potential_fakes, self.pool):
             if (
                 FakeWordGenerator.__similarity_score(fake_word, word)
                 > threshold
@@ -133,29 +132,37 @@ class FakeWordGenerator:
                 yield fake_word
 
     def generate(
-        self, limit: int = 1, threshold: float = 0.6
-    ) -> Dict[str, str]:
-        """
-        Given a set of input words and n, generate n number of new fake words with a similarity score higher than the threshold to any of the original words.
+        self,
+        limit: int = 1,
+        threshold: float = 0.6,
+        exclude: Union[List[str], None] = None,
+    ) -> List[str]:
+        """Given a set of input words and n, generate n number of new fake words with a similarity score higher than the threshold to any of the original words.
 
         Args:
+            limit (int, optional): limit the number of words generated, is capped at the total length of original input words
             threshold (float, optional): The threshold score between 0-1 to accept fake words in similarity to existing words. Defaults to 0.6.
+            exclude (List[str], optional): any words to exclude as a base when generating new words, Defaults to [].
 
         Returns:
-            output (Dict[str, Union[str, None]]): A dictionary with the original word and the first plausible fake word generated for it if at all possible
+            List[str]: a list of plausible fake words
         """
-        output = {}
-        sample = random.sample(
-            self.pool, limit if limit < len(self.pool) else len(self.pool)
-        )
 
-        for random_word in sample:
+        output = []
+
+        if exclude:
+            subpool = [x for x in self.pool if x not in exclude]
+            input_words = random.sample(subpool, min(len(subpool), limit))
+        else:
+            input_words = random.sample(self.pool, min(len(self.pool), limit))
+
+        for word in input_words:
             random.shuffle(self.second_parts)
-            random_word_pairs = self.__split_pairs(random_word)
+            random_word_pairs = self.__split_pairs(word)
             first_part = random.choice(random_word_pairs)[0]
             exceptions = [x[1] for x in random_word_pairs]
 
-            potential_words = (
+            potential_fakes = (
                 first_part + second_part
                 for second_part in self.second_parts
                 if second_part not in exceptions
@@ -164,10 +171,10 @@ class FakeWordGenerator:
             )
 
             fake_word = next(
-                (x for x in self.__find_match(potential_words, threshold)),
+                (x for x in self.__find_match(potential_fakes, threshold)),
                 None,
             )
             if fake_word:
-                output[random_word] = fake_word
+                output.append(fake_word)
 
         return output
