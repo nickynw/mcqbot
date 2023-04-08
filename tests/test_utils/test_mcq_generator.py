@@ -13,6 +13,6 @@ def test_mcq_generator():
     output = mcq.generate()
     assert output == {
         'answer': 'Glycine',
-        'choices': ['Glycine', 'Histadine', 'Muscimol', 'Serin C'],
+        'choices': ['Glycine', 'Vitamin C', 'Serodroxytryptophan', 'L-DOPA'],
         'topic': 'Neurotransmitter',
     }
