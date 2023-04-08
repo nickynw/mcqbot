@@ -17,8 +17,8 @@ class FakeWordGenerator:
     dic_US = pyphen.Pyphen(lang='en_US')
     dic_GB = pyphen.Pyphen(lang='en_GB')
 
-    def __init__(self, words: List[str]):
-        self.pool = words
+    def __init__(self, pool: List[str]):
+        self.pool = pool
         self.second_parts = [
             x[1]
             for x in list(
@@ -92,7 +92,7 @@ class FakeWordGenerator:
         if not pairs:
             pairs = list(FakeWordGenerator.dic_GB.iterate(word))
 
-        # Adds permutations of consonant/vowels around the split location.
+        # Adds further permutations where consonant/vowels are split across two parts in a pair e.g. (Gree,tings), (Greet,ings)
         pairs.extend(
             [
                 (pair[0][:-1], pair[0][-1] + pair[1])
@@ -111,12 +111,11 @@ class FakeWordGenerator:
         Generators are used to iterate over possible permutations without loading all of them into memory at once.
 
         Args:
-            fake_words (Generator[str, None, None]): potential new words
-            existing_words (List[str]): the full original list of words
+            potential_fakes (Generator[str, None, None]): potential new words
             threshold (float): the score threshold for similarity to accept
 
         Returns:
-            Generator[str]: a fake word generator
+            Generator[str]: a fake blended word that has a similarity score above a given threshold to an original input word
 
         Yields:
             str: a fake word
@@ -135,14 +134,14 @@ class FakeWordGenerator:
         self,
         limit: int = 1,
         threshold: float = 0.6,
-        exclude: Union[List[str], None] = None,
+        filter_list: Union[List[str], None] = None,
     ) -> List[str]:
-        """Given a set of input words and n, generate n number of new fake words with a similarity score higher than the threshold to any of the original words.
+        """Given a set of input words, generate fake blended words with a similarity score higher than the threshold to any original input word.
 
         Args:
             limit (int, optional): limit the number of words generated, is capped at the total length of original input words
             threshold (float, optional): The threshold score between 0-1 to accept fake words in similarity to existing words. Defaults to 0.6.
-            exclude (List[str], optional): any words to exclude as a base when generating new words, Defaults to [].
+            filter_list (List[str], optional): any words to filter out as a base word when generating new words, Defaults to None.
 
         Returns:
             List[str]: a list of plausible fake words
@@ -150,22 +149,23 @@ class FakeWordGenerator:
 
         output = []
 
-        if exclude:
-            subpool = [x for x in self.pool if x not in exclude]
-            input_words = random.sample(subpool, min(len(subpool), limit))
+        if filter_list:
+            subpool = [x for x in self.pool if x not in filter_list]
+            base_words = random.sample(subpool, min(len(subpool), limit))
         else:
-            input_words = random.sample(self.pool, min(len(self.pool), limit))
+            base_words = random.sample(self.pool, min(len(self.pool), limit))
 
-        for word in input_words:
+        for word in base_words:
             random.shuffle(self.second_parts)
             random_word_pairs = self.__split_pairs(word)
             first_part = random.choice(random_word_pairs)[0]
-            exceptions = [x[1] for x in random_word_pairs]
+            exclusions = [x[1] for x in random_word_pairs]
 
+            # This generator will build a new valid blended word on each yield
             potential_fakes = (
                 first_part + second_part
                 for second_part in self.second_parts
-                if second_part not in exceptions
+                if second_part not in exclusions
                 and first_part + second_part not in self.pool
                 and self.__is_valid_word(first_part, second_part)
             )
