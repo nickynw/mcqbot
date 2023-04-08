@@ -21,7 +21,7 @@ data = { "Neurotransmitter" : ["Serotonin",'Glycine', 'Glutamate', 'GABA', 'Dopa
           'Muscimol': []
 } 
 
-def graph() -> nx.DiGraph:
+def create_graph() -> nx.DiGraph:
     """
     Creates a network x graph from data.
 
