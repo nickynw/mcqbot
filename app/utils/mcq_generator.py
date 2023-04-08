@@ -4,7 +4,7 @@ import random
 from typing import Dict, List, Tuple, Union
 
 import networkx as nx
-from fake_word_generator import FakeWordGenerator
+from app.utils.fake_word_generator import FakeWordGenerator
 
 
 class MCQGenerator:
