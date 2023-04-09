@@ -1,4 +1,7 @@
-﻿[MAIN]
+﻿[MASTER]
+ignore=*/models.py
+
+[MAIN]
 
 
 # Analyse import fallback blocks. This can be used to support both Python 2 and

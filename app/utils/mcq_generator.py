@@ -1,9 +1,10 @@
 """A utility module for MCQBot"""
 
 import random
-from typing import Dict, List, Tuple, Union
+from typing import List, Tuple
 
 import networkx as nx
+from app.models import MCQ
 from app.utils.fake_word_generator import FakeWordGenerator
 
 
@@ -45,7 +46,7 @@ class MCQGenerator:
         ]
         return answers, distractors
 
-    def generate(self) -> Dict[str, Union[str, List[str]]]:
+    def generate(self) -> MCQ:
         """
         Generate answer, topic and distractors.
 
@@ -62,4 +63,4 @@ class MCQGenerator:
         # shuffle the answer, distractors and fakes
         choices = [answer] + random.sample(distractors, 2) + fakes
         random.shuffle(choices)
-        return {'topic': topic, 'answer': answer, 'choices': choices}
+        return MCQ(**{'topic': topic, 'answer': answer, 'choices': choices})

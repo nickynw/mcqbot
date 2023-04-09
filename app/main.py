@@ -2,6 +2,7 @@
 # pylint: disable=unused-argument
 
 from app.data.neurograph import create_graph
+from app.models import MCQ
 from app.utils.mcq_generator import MCQGenerator
 from fastapi import FastAPI, Request
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -27,7 +28,7 @@ async def live(request: Request) -> dict:
 
 @app.get('/')
 @limiter.limit('5/second')
-async def root(request: Request):
+async def root(request: Request, response_model=MCQ) -> MCQ:
     """
     Basic mcq generated at api root
 
