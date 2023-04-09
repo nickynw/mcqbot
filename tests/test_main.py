@@ -15,7 +15,7 @@ def test_live():
 
 def test_root():
     """Checks the api was able to generate an mcq"""
-    response = client.get('/live')
+    response = client.get('/')
     assert response.status_code == 200
     mcq = response.json()
     assert 'answer' in mcq
