@@ -2,7 +2,7 @@
 
 #### Description
 
-MCQBOT is a simple practical project that I developed to demonstrate my proficiency in software engineering, with attention to modular design, version control, OOP, automated testing, continuous development and code quality. I also aim to showcase my skills in problem-solving, algorithm design, data and solution architecture. This project itself is a website that generates multiple-choice questions (MCQs) from a graph database, aiming to provide a template for people to produce tests quickly and easily. 
+MCQBOT is a simple practical project that I developed to demonstrate my proficiency in software engineering, with attention to modular design, version control, object-orientated programming (OOP), automated testing, continuous development and code quality. I also aim to showcase my skills in problem-solving, algorithm design, data and solution architecture. This project itself is a website that generates multiple-choice questions (MCQs) from a graph database, aiming to provide a template for people to produce tests quickly and easily. 
 
 ### Modular Design
 
