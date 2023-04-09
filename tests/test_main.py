@@ -21,3 +21,15 @@ def test_root():
     assert 'answer' in mcq
     assert 'topic' in mcq
     assert 'choices' in mcq and len(mcq['choices']) > 2
+
+
+def test_rate_limit():
+    """Checks that rate limitation is occuring on the root endpoint"""
+    # Send 5 requests to the rate-limited endpoint
+    for i in range(4):
+        response = client.get('/')
+        assert response.status_code == 200
+
+    # The 6th request should exceed the rate limit and return a 429 error
+    response = client.get('/')
+    assert response.status_code == 429
