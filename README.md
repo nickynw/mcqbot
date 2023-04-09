@@ -6,7 +6,7 @@ MCQBOT is a simple practical project that I developed to demonstrate my proficie
 
 ### Modular Design
 
-As the project develops I will be ensuring a modular design. This means that the different technologies that make up the stack, such as front-end, the api, and databases logic will be seperate and independently tested.
+As the project develops I will be ensuring a modular design. This means that the different technologies that make up the stack, such as front-end, the api, and databases logic will be seperate and independently tested. Modular and reusable pydantic models are also used.
 
 ### Object Orientated Programming
 
@@ -22,7 +22,7 @@ Each time a push is made to a branch a series of tests will be run in a pytest s
 
 ### Code Quality
 
-Code will be fully documented, commented where necessary, and all python language classes and functions that I have written are fully typed, ensuring that the code is both robust and easy to understand.
+Code will be fully documented, commented where necessary, and all python language classes and functions that I have written are fully typed, ensuring that the code is both robust and easy to understand. Pydantic is also used where appropriate to provide data validation and type checking at runtime.
 
 Every time a push is made to any branch, a number of checks run by various python packages listed below will be automatically run in a github action workflow.  The push will fail if there are any further changes or improvements suggested by these packages. This is a stringent measure to ensure that the only way code can make it into the project is if the code has been correctly formatted and reviewed locally.
 
