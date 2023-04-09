@@ -8,17 +8,19 @@ app = FastAPI()
 
 @app.get('/live')
 async def live() -> dict:
-    """Basic test root for fastapi
+    """
+    Basic live test for api
 
     Returns:
-        dict: json response
+        dict: empty response
     """
     return {}
 
 
 @app.get('/')
 async def root() -> dict:
-    """Basic test root for fastapi
+    """
+    Basic mcq generated at api root
 
     Returns:
         dict: json response
