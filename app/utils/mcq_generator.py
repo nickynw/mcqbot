@@ -57,9 +57,9 @@ class MCQGenerator:
 
         # create a fake blended word
         fwg = FakeWordGenerator(pool=answers + distractors)
-        fake = fwg.generate(filter_list=[answer] + distractors, limit=1).pop()
+        fakes = fwg.generate(filter_list=[answer] + distractors, limit=1)
 
         # shuffle the answer, distractors and fakes
-        choices = [answer] + random.sample(distractors, 2) + [fake]
+        choices = [answer] + random.sample(distractors, 2) + fakes
         random.shuffle(choices)
         return {'topic': topic, 'answer': answer, 'choices': choices}
