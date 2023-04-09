@@ -10,8 +10,4 @@ def test_fake_word_generator():
     pool = ['Hello', 'Goodbye', 'Greetings']
     fwg = FakeWordGenerator(pool)
     output = fwg.generate(limit=3, threshold=0)
-    assert output == {
-        'Hello': 'Heltings',
-        'Greetings': 'Greebye',
-        'Goodbye': 'Goodlo',
-    }
+    assert output == ['Heltings', 'Greebye', 'Goodlo']
