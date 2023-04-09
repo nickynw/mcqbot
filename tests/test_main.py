@@ -26,7 +26,7 @@ def test_root():
 def test_rate_limit():
     """Checks that rate limitation is occuring on the root endpoint"""
     # Send 5 requests to the rate-limited endpoint
-    for i in range(4):
+    for _ in range(4):
         response = client.get('/')
         assert response.status_code == 200
 
