@@ -18,7 +18,7 @@ The project itself is hosted on github and will adhere to a set of rules to ensu
 
 ### Automated Testing
 
-Each time a push is made to a branch a series of tests will be run in a pytest suite via a github action/workflow. On top of this, whenever a pull request is opened, a docker container will be spun up to run the tests in a docker environment based on the production environment, and the merge will only be able to proceed if these tests pass.
+Each time a push is made to a branch a series of unit tests and integration tests will be run in a pytest suite via a github action/workflow. On top of this, whenever a pull request is opened, a docker container will be spun up to run the tests in a docker environment based on the production environment, and the merge will only be able to proceed if these tests pass.
 
 ### Code Quality
 
