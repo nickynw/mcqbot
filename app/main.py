@@ -1,5 +1,6 @@
 """A basic bare main file for an api using fastapi"""
 from fastapi import FastAPI
+
 from app.utils.mcq_generator import MCQGenerator
 from app.data.neurograph import create_graph
 
@@ -17,6 +18,7 @@ async def live() -> dict:
     return {}
 
 
+# Define rate limits
 @app.get('/')
 async def root() -> dict:
     """
