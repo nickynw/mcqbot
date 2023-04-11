@@ -12,7 +12,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Build and run Docker Compose
-        run: docker-compose up --exit-code-from test-app test-app
+        run: docker-compose up --exit-code-from test-app
       - name: Test Results
         run: |
           if [ $? -eq 0 ]; then
