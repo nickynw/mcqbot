@@ -9,3 +9,5 @@ scratch
 *.ipynb
 .mypy_cache
 poetry.lock
+.vscode
+neo4j
