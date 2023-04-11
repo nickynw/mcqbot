@@ -1,4 +1,4 @@
-run-name: Code Audit - ${{ github.actor }} ${{ github.event_name }} for ${GITHUB_REF##*/} id ${{ github.run_id }}
+run-name: Code Audit - ${{ github.actor }} ${{ github.event_name }} for ${{ github.ref }} id ${{ github.run_id }}
 name: Code Audit
 on: [push]
 jobs:
