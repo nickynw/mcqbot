@@ -8,5 +8,4 @@ COPY . .
 
 RUN poetry config virtualenvs.create false
  
-
 RUN  poetry install  --with "code_audit" --no-interaction --no-ansi --verbose
