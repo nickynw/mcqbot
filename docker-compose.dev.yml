@@ -1,0 +1,30 @@
+version: '3.9'
+networks:
+  mcqbot:
+    driver: bridge
+services:
+  app:
+    networks:
+    - mcqbot
+    build:
+      context: .
+      dockerfile: ./app.Dockerfile
+    ports:
+      - "80:80"
+  graph:
+    image: neo4j
+    restart: unless-stopped
+    networks:
+    - mcqbot
+    build: .
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - ./neo4j/data:/data
+      - ./neo4j/logs:/logs
+      - ./neo4j/import:/var/lib/neo4j/import
+      - ./neo4j/plugins:/plugins
+    environment:
+      NEO4J_AUTH: neo4j/password
+    container_name: mcqbot-graph
