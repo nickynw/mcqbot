@@ -3,13 +3,6 @@ networks:
   mcqbot:
     driver: bridge
 services:
-  test-app:
-    build:
-      context: .
-      dockerfile: ./test-app.Dockerfile
-    ports:
-      - "5000:5000"
-    command: sh -c 'poetry run pytest --junitxml=result.xml --verbose || exit 1'
   app:
     networks:
     - mcqbot
