@@ -1,9 +1,9 @@
 version: '3'
 services:
-  app:
+  test-app:
     build:
       context: .
-      dockerfile: ./Dockerfile.tests
+      dockerfile: ./test-app.Dockerfile
     ports:
       - "5000:5000"
     command: sh -c 'poetry run pytest --junitxml=result.xml --verbose || exit 1'
