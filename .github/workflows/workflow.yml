@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 run-name: ${{ github.actor }} ${{ github.event_name }} for ${{ github.ref }} id ${{ github.run_id }}
 name: Code Audit and Tests
 on:
   push:
     branches:
       - main
+=======
+run-name: Code Audit - ${{ github.actor }} ${{ github.event_name }} for ${{ github.ref }} id ${{ github.run_id }}
+name: Code Audit
+on:
+>>>>>>> bf18734 (basic neo4j connector which can delete nodes and create nodes)
   pull_request:
     types: [opened, reopened, synchronize]
 jobs:
