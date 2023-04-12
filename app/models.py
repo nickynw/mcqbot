@@ -15,3 +15,24 @@ class MCQ(BaseModel):
 
     class Config:
         extra = 'forbid'
+
+
+class MCQNode(BaseModel):
+    """Model for Nodes in Neo4J"""
+
+    name: str
+    
+    class Config:
+        extra = 'forbid'
+
+
+class MCQRelationship(BaseModel):
+    """Model for Nodes in Neo4J"""
+
+    node_a: str
+    rel_type: str
+    node_b: str
+    
+    class Config:
+        extra = 'forbid'
+
