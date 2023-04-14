@@ -58,6 +58,9 @@ jobs:
             ~/.cache/pip
           key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/pyproject.toml') }}
 
+      - name: Add Poetry to PATH
+        run: echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
       - name: Run tests
         run: |
           python -m poetry run pytest ./tests/test_app
