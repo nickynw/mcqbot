@@ -37,6 +37,6 @@ jobs:
           ~/.cache/pypoetry
           ~/.cache/pip
           /usr/local/bin/python
-        key: ${{ runner.os }}-deps-python-${{ hashFiles('**/poetry.lock')
+        key: ${{ runner.os }}-deps-python-${{ hashFiles('**/poetry.lock') }}
      
      
