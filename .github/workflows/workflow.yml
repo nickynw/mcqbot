@@ -1,28 +1,22 @@
-<<<<<<< HEAD
-run-name: ${{ github.actor }} ${{ github.event_name }} for ${{ github.ref }} id ${{ github.run_id }}
 name: Code Audit and Tests
 on:
-  push:
-    branches:
-      - main
-=======
-run-name: Code Audit - ${{ github.actor }} ${{ github.event_name }} for ${{ github.ref }} id ${{ github.run_id }}
-name: Code Audit
-on:
->>>>>>> bf18734 (basic neo4j connector which can delete nodes and create nodes)
   pull_request:
     types: [opened, reopened, synchronize]
 jobs:
   code-audit:
     environment: Test_Environment
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         python-version: ["3.9"]
+
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -39,7 +33,36 @@ jobs:
         python -m venv venv
         source venv/bin/activate
         pip install poetry==1.4.2
+        poetry install -v --with "code_audit"
+
+    - name: Install dependencies
+      run: |
+        source venv/bin/activate
         poetry install --with "code_audit"
+
+    - name: Assess imports with isort
+      if: always()
+      run: |
+        source venv/bin/activate
+        poetry run isort $(git ls-files '*.py')
+
+    - name: Assess static typing with mypy
+      if: always()
+      run: |
+        source venv/bin/activate
+        poetry run mypy $(git ls-files '*.py')
+
+    - name: Formatting with blue
+      if: always()
+      run: |
+        source venv/bin/activate
+        poetry run blue . --check
+        
+    - name: Analyse code with pylint
+      if: always()
+      run: |
+        source venv/bin/activate
+        poetry run pylint $(git ls-files '*.py')
      
   test-app:
     needs: code-audit
@@ -55,8 +78,50 @@ jobs:
         with:
           path: venv
           key: venv-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
 
       - name: Run tests
         run: |
           source venv/bin/activate
-          poetry run pytest
+          poetry run pytest ./tests/test_app
+
+  test-neo4j:
+    needs: code-audit
+    environment: Test_Environment
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set environment variables
+        env:
+          NEO4J_USERNAME: neo4j
+          NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
+          NEO4J_URI: ${{ secrets.NEO4J_URI }}
+        run: |
+          echo "NEO4J_USERNAME=neo4j" >> .env
+          echo "NEO4J_PASSWORD=${NEO4J_PASSWORD}" >> .env
+          echo "NEO4J_URI=${NEO4J_URI}" >> .env
+
+      - name: Start Neo4j service
+        run: docker-compose -f docker-compose.dev.yml up --detach graph
+
+      - name: Restore venv directory from cache
+        uses: actions/cache@v2
+        with:
+          path: venv
+          key: venv-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+
+      - name: Install Neo4j dependencies
+        run: |
+          source venv/bin/activate
+          poetry install -v --with "neo4j"
+
+      - name: Run tests on neo4j database
+        if: always()
+        run: |
+          source venv/bin/activate
+          poetry run pytest ./tests/test_neo4j
