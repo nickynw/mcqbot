@@ -37,6 +37,9 @@ jobs:
         python -m pip install poetry==1.4.2
         python -m poetry config virtualenvs.in-project true
         python -m poetry install --with "code_audit"
+      env:
+        POETRY_HOME: $HOME/.poetry
+        PATH: $HOME/.poetry/bin:$PATH
      
   test-app:
     needs: code-audit
@@ -57,4 +60,4 @@ jobs:
 
       - name: Run tests
         run: |
-          poetry run pytest ./tests/test_app
+          python -m poetry run pytest ./tests/test_app
