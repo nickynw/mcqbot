@@ -12,11 +12,10 @@ services:
     ports:
       - "80:80"
   graph:
-    image: neo4j
+    image: neo4j:latest
     restart: unless-stopped
     networks:
     - mcqbot
-    build: .
     ports:
       - "7474:7474"
       - "7687:7687"
