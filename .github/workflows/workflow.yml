@@ -58,7 +58,7 @@ jobs:
     needs: code-audit
     environment: Test_Environment
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         python-version: ["3.9"]
@@ -66,6 +66,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Restore venv directory from cache
+        uses: actions/cache@v2
+        with:
+          path: venv
+          key: venv-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
 
       - name: Set environment variables
         env:
