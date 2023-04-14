@@ -39,4 +39,29 @@ jobs:
           /usr/local/bin/python
         key: ${{ runner.os }}-deps-python-${{ hashFiles('**/poetry.lock') }}
      
-     
+  test-app:
+    needs: code-audit
+    environment: Test_Environment
+    runs-on: ubuntu-latest
+
+  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Cache dependencies and Python
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/pypoetry
+            ~/.cache/pip
+            /usr/local/bin/python
+          key: ${{ runner.os }}-deps-python-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-python-
+            ${{ runner.os }}-
+
+      - name: Run basic app tests which do not require anything running.
+        if: always()
+        run: |
+          poetry run pytest ./tests/test_app
