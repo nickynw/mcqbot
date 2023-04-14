@@ -20,26 +20,24 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Cache Python and Poetry installations
+    - name: Cache venv directory
       uses: actions/cache@v2
       with:
-        path: |
-          ~/.cache/pypoetry
-          ~/.cache/pip
-        key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/pyproject.toml') }}
+        path: venv
+        key: venv-${{ hashFiles('poetry.lock') }}
         restore-keys: |
-          ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}-
-          ${{ runner.os }}-poetry-
+          venv-
 
-    - name: Install Poetry dependencies
+    - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install poetry==1.4.2
-        python -m poetry config virtualenvs.in-project true
-        python -m poetry install --with "code_audit"
-      env:
-        POETRY_HOME: $HOME/.poetry
-        PATH: $HOME/.poetry/bin:$PATH
+        python -m venv venv
+        source venv/bin/activate
+        pip install poetry==1.4.2
+        poetry install --with "code_audit"
+
+    - name: Run tests
+      run: |
+          poetry run pytest ./tests/test_app
      
   test-app:
     needs: code-audit
@@ -50,15 +48,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Restore Python and Poetry installations from cache
+      - name: Restore venv directory from cache
         uses: actions/cache@v2
         with:
-          path: |
-            ~/.cache/pypoetry
-            ~/.cache/pip
-          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/pyproject.toml') }}
-
+          path: venv
+          key: venv-${{ hashFiles('poetry.lock') }}
 
       - name: Run tests
         run: |
-          ~/.poetry/bin/poetry run pytest ./tests/test_app
+          source venv/bin/activate
+          poetry run pytest
