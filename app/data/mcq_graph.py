@@ -1,87 +1,164 @@
-from typing import Dict, List, Optional, Tuple
-from py2neo import Graph, Node, Relationship, Transaction, NodeMatcher, RelationshipMatcher
-from app.models import MCQNode, MCQRelationship
-from app.utils.log_util import create_logger
-from py2neo.bulk import create_nodes, create_relationships
+"""Object for acessing neo4j graph database"""
 from collections import Counter
+from typing import List, Union
+
+from app.models import MCQNode, MCQRelationship
+from app.utils.log_util import create_logger, session_query
+from neo4j import GraphDatabase
 
 logger = create_logger(__name__)
 
-class MCQGraph():
-    """Class provides a data access layer to the Neo4J Graph Database"""
-    def __init__(self, uri: str, username: str, password: str):
-        self.graph = Graph(uri, auth=(username, password))
-        self.batch_size = 500
-        logger.info('New MCQGraph Object created - connection opened.')
+
+class MCQGraph:
+    """
+    This object forms a data access layer via neo4j python driver to the neo4j graph database.
+    """
+    def __init__(self, uri, user, password):
+        self.driver = GraphDatabase.driver(uri, auth=(user, password))
+        with self.driver.session() as session:
+            session.run("CREATE CONSTRAINT IF NOT EXISTS FOR (e:Entity) REQUIRE e.name IS UNIQUE;")
+        logger.info('New MCQGraph Object created - connection opened. Added constraint.')
+
+    def close(self):
+        """
+        Closes the neo4j database connection.
+        """
+        self.driver.close()
+        logger.info('Neo4J Connection closed.')
 
     def delete_all(self):
         """
-        Cleares all data from the database.
+        Deletes all nodes in the database.
         """
-        self.graph.delete_all()
-        logger.info(f'All nodes removed from graph database.')
+        with self.driver.session() as session:
+            query = """
+                    MATCH (node)
+                    DETACH DELETE node;"""
+            logger.debug(session_query(query))
+            session.run(query)
+            logger.info('All nodes removed from graph database.')
 
     def create_nodes(self, nodes: List[MCQNode]):
         """
-        Uses py2neo create_nodes bulk function, which unfortunately does not return anything.
-        Instead we log any input nodes that are skipped.
-
+        Creates nodes in the database using a list of input nodes with expected properties.
+        
         Args:
-            nodes (List[MCQNode]): _description_
+            nodes (List[MCQNode]): input nodes.
 
         Raises:
-            ValueError: _description_
+            ValueError: Raised if any form of duplication can occur on node name.
         """
-        # Warn if there are duplicate names
+
+        # Check for duplicates within the input
         counter = Counter([x.name for x in nodes])
         duplicates = [x for x in nodes if counter[x.name] > 1]
-
         if duplicates:
-            logger.warn(f'Duplicate names detected: %s', {x.name for x in nodes}, extra={'nodes':duplicates})
-            raise ValueError("Duplicates discovered within input nodes by name. Please remove these before reattempting bulk creation.")
-                        
-        # Create bulk nodes in batches, keep track of nodes skipped due to pre-existing node.
-        skipped_nodes = []
-        for i in range(0, len(nodes), self.batch_size):
-            node_batch = [x for x in nodes[i:i +  self.batch_size]]
-            skip_batch = [x for x in node_batch if bool(self.match_nodes([{'name':x.name}], log = False))]
-            skipped_nodes.extend(skip_batch)
-            create_nodes(self.graph.auto(), [x.dict() for x in node_batch if x not in skip_batch])
+            logger.error(
+                'Duplicate name inputs detected: %s',
+                {x.name for x in nodes},
+                extra={'nodes': duplicates},
+            )
+            raise ValueError(
+                f'Duplication Error: {len(duplicates)} node duplicates within input.'
+            )
 
-        if skipped_nodes:
-            logger.warn(f'Skipped nodes that already exist with these names: %s', {x.name for x in skipped_nodes}, extra={'nodes':skipped_nodes})
+        # Check for duplicates within the database
+        matches = [
+            y for y in [self.has_name(x.name) for x in nodes] if y is not None
+        ]
+        if matches:
+            logger.error(
+                'Nodes already exist with these names: %s',
+                {x.name for x in matches},
+                extra={'nodes': matches},
+            )
+            raise ValueError(
+                f'Duplication Error: {len(matches)} nodes already have names in database.'
+            )
 
-        logger.info(f'{len(nodes)-len(skipped_nodes)} nodes created out of {len(nodes)}.')
+        # Create nodes in session batches
+        query = 'CREATE (:Entity $props);'
+        with self.driver.session() as session:
+            for node in nodes:
+                logger.debug(session_query(query, props=node.dict()))
+                session.run(query, props=node.dict())
+            logger.info('Created %s nodes.', len(nodes))
 
     def create_relationships(self, relationships: List[MCQRelationship]):
-        for i in range(0, len(relationships), self.batch_size):
-            rel_batch = relationships[i:i +  self.batch_size]
-            create_relationships(self.graph.auto(), [x.dict() for x in rel_batch])
-    
-        logger.info(f'{len(relationships)} relationships created.')
+        """
+        Creates relationships given a list of input relationships.
 
-    def match_nodes(self, properties: List[Dict[str, str]], log: bool = True) -> List[MCQNode]:
-        matcher = NodeMatcher(self.graph)
-        output = []
+        Args:
+            relationships (List[MCQRelationship]): list of relationships to create        
 
-        for prop in properties:
-            result = matcher.match(**prop).first()
-            if result:  
-                output.append(MCQNode.from_node(result))
-    
-        if log:
-            logger.info(f'Found {len(output)} matches from {len(properties)} properties provided.')
-        return output
+        Raises:
+            ValueError: if a relationship fail to be created.
+        """
+        with self.driver.session() as session:
+            try:
+                for relationship in relationships:
+                    query = (
+                        """
+                        MATCH (start:Entity {name: $start_node})
+                        MATCH (end:Entity {name: $end_node})
+                        CREATE (start)-[relationship:%s]->(end)
+                        return relationship;
+                    """
+                        % relationship.type
+                    )
+                    logger.debug(session_query(query, **relationship.dict()))
+                    success = bool(session.run(query, **relationship.dict()).single())
+                    if not success:
+                        logger.warning(
+                                'Failed to create relationship: %s', str(relationship),
+                                extra={'relationship': relationships},
+                        )
+                        raise ValueError('No relationships created due to failed relationships within input.')
+            except Exception:
+                session.rollback()  # roll back the transaction if an exception occurred
+                raise
+        logger.info(
+            'Created %s relationships in the database.', len(relationships)
+        )
 
-    def match_relationships(self, relationships: List[MCQRelationship]) -> List[MCQRelationship]:
-        matcher = RelationshipMatcher(self.graph)
-        output = []
 
-        for rel in relationships:
-            result = matcher.match(**rel).first()
-            if result:  
-                output.append(MCQRelationship.from_relationship(result))
-    
-        return output
-              
-    #TODO: assert on logger, look into what happens if node creation fails in bulk. how to run in github action
+    def has_name(self, name: str) -> Union[MCQNode, None]:
+        """
+        Checks the database contains a node with the given name.
+
+        Args:
+            name (str): name to check against
+
+        Returns:
+            MCQNode: the node found with the given name
+        """
+        with self.driver.session() as session:
+            query = """
+            MATCH (node:Entity {name: $name})
+            RETURN node;"""
+            logger.debug(session_query(query, name=name))
+            result = session.run(query, name=name)
+            record = result.single()
+            if record:
+                return MCQNode.from_node(record['node'])
+        return None
+
+    def has_relationship(self, relationship: MCQRelationship) -> bool:
+        """
+        Checks if database has the provided relationship.
+
+        Args:
+            relationship (MCQRelationship): The relationship to check for.
+
+        Returns:
+            bool: bool representation of found relationship in database.
+        """
+        with self.driver.session() as session:
+            query = (
+                """MATCH (start_node:Entity {name: $start_node})-[r:%s]-(end_node:Entity {name: $end_node})
+            RETURN r"""
+                % relationship.type
+            )
+            logger.debug(session_query(query, **relationship.dict()))
+            result = session.run(query, **relationship.dict())
+            return bool(result.single())
