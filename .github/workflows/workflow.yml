@@ -73,17 +73,17 @@ jobs:
           echo "NEO4J_PASSWORD=${NEO4J_PASSWORD}" >> .env
           echo "NEO4J_URI=${NEO4J_URI}" >> .env
 
-      - name: Start Neo4j service
-        run: |
-          source venv/bin/activate
-          docker-compose -f docker-compose.dev.yml up --detach graph
-
       - name: Restore venv directory from cache
         uses: actions/cache@v2
         with:
           path: venv
           key: venv-${{ hashFiles('poetry.lock') }}
           restore-keys: |
+
+      - name: Start Neo4j service
+        run: |
+          source venv/bin/activate
+          docker-compose -f docker-compose.dev.yml up --detach graph
 
       - name: Run tests on neo4j database
         if: always()
