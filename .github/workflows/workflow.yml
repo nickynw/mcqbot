@@ -61,6 +61,9 @@ jobs:
 
     steps:
 
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Set environment variables
         env:
           NEO4J_USERNAME: neo4j
@@ -70,9 +73,6 @@ jobs:
           echo "NEO4J_USERNAME=neo4j" >> .env
           echo "NEO4J_PASSWORD=${NEO4J_PASSWORD}" >> .env
           echo "NEO4J_URI=${NEO4J_URI}" >> .env
-
-      - name: Checkout code
-        uses: actions/checkout@v2
 
       - name: Start Neo4j service
         run: docker-compose -f docker-compose.dev.yml up --detach graph
@@ -84,10 +84,6 @@ jobs:
           key: venv-${{ hashFiles('poetry.lock') }}
           restore-keys: |
 
-      - name: Install poetry
-        run: |
-          source venv/bin/activate
-          python -m pip install poetry==1.4.2
       - name: Run tests on neo4j database
         if: always()
         run: |
