@@ -60,6 +60,7 @@ jobs:
         poetry run pylint $(git ls-files '*.py')
 
   test-app:
+    needs: code-audit
     runs-on: ubuntu-latest
     strategy:
       matrix:
