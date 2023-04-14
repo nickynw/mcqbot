@@ -18,7 +18,7 @@ The project itself is hosted on github and will adhere to a set of rules to ensu
 
 ### Automated Testing
 
-Each time a pull request is made (and subsequently modified) a series of unit tests and integration tests will be run in a pytest suite via a github action/workflow. The first job is a code audit which performs a seeries of quality checks (see Code Quality) and if this succeeds it is followed by seperate tests for each module using the cached environment. The test-app job performs unit tests related to the internal app logic and the api. The test-neo4j job spins up a docker service for neo4j which the tests for the graph database interface can connect to. Once all these jobs pass only then can the branch be merged into main.
+Each time a pull request is made (and subsequently modified) a series of unit tests and integration tests will be run in a pytest suite via a github action/workflow. The first job is a code audit which performs a series of quality checks (see Code Quality) and if this succeeds it is followed by seperate tests for each module using the cached environment. The test-app job performs unit tests related to the internal app logic and the api. The test-neo4j job spins up a docker service for neo4j which tests for the graph database interface can connect to. Once all these jobs pass only then can the branch be merged into main.
 
 ### Code Quality
 
