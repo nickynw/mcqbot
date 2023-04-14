@@ -1,4 +1,3 @@
-run-name: ${{ github.actor }} ${{ github.event_name }} for ${{ github.ref }} id ${{ github.run_id }}
 name: Code Audit and Tests
 on:
   push:
@@ -10,9 +9,11 @@ jobs:
   code-audit:
     environment: Test_Environment
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         python-version: ["3.9"]
+
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -53,4 +54,38 @@ jobs:
       - name: Run tests
         run: |
           source venv/bin/activate
-          poetry run pytest
+          poetry run pytest ./tests/test_app
+
+  test-neo4j:
+    needs: code-audit
+    environment: Test_Environment
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set environment variables
+        env:
+          NEO4J_USERNAME: ${{ secrets.NEO4J_USERNAME }}
+          NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
+          NEO4J_URI: ${{ secrets.NEO4J_URI }}
+        run: |
+          echo "NEO4J_USERNAME=${NEO4J_USERNAME}" >> .env
+          echo "NEO4J_PASSWORD=${NEO4J_PASSWORD}" >> .env
+          echo "NEO4J_URI=${NEO4J_URI}" >> .env
+
+      - name: Start Neo4j service
+        run: docker-compose -f docker-compose.dev.yml up --detach graph
+
+      - name: Restore venv directory from cache
+        uses: actions/cache@v2
+        with:
+          path: venv
+          key: venv-${{ hashFiles('poetry.lock') }}
+
+      - name: Run tests on neo4j database
+        if: always()
+        run: |
+          source venv/bin/activate
+          poetry run pytest ./tests/test_neo4j
