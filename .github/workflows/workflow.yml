@@ -72,7 +72,7 @@ jobs:
           echo "NEO4J_URI=${NEO4J_URI}" >> .env
 
       - name: Start Neo4j service
-            run: docker-compose -f docker-compose.dev.yml up --detach graph
+        run: docker-compose -f docker-compose.dev.yml up --detach graph
 
       - name: Checkout code
         uses: actions/checkout@v2
