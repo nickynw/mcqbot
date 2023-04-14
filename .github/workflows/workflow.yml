@@ -68,9 +68,20 @@ jobs:
     needs: code-audit
     environment: Test_Environment
     runs-on: ubuntu-latest
+
+    services:
+      neo4j:
+        image: docker/compose:latest
+        env:
+          NEO4J_USERNAME: ${{ secrets.NEO4J_USERNAME }}
+          NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
+          NEO4J_URI: ${{ secrets.NEO4J_URI }}
+        command: ["docker-compose", "-f", "docker-compose.dev.yml", "up", "graph"]
+
     strategy:
       matrix:
         python-version: ["3.9"]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -98,10 +109,6 @@ jobs:
           echo "NEO4J_PASSWORD=${NEO4J_PASSWORD}" >> .env
           echo "NEO4J_URI=${NEO4J_URI}" >> .env
 
-      - name: Build and run Neo4j
-        run: |
-          docker-compose -f docker-compose.dev.yml up graph
-
       - name: Run tests on neo4j database
         if: always()
         run: |
@@ -110,5 +117,3 @@ jobs:
       - name: Stop and remove containers
         run: |
           docker-compose down
-
-
