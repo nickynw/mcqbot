@@ -88,7 +88,7 @@ jobs:
           echo "NEO4J_URI=${NEO4J_URI}" >> .env
 
       - name: Start Neo4j service
-        run: docker-compose -f docker-compose.dev.yml up graph --detach
+        run: docker-compose -f docker-compose.dev.yml up --detach graph
 
       - name: Restore the virtualenv cache
         uses: actions/cache@v2
