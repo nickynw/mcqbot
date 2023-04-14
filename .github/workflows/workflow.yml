@@ -2,7 +2,7 @@ run-name: ${{ github.actor }} ${{ github.event_name }} for ${{ github.ref }} id 
 name: Code Audit and Tests
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [opened, reopened, synchronize, push]
 jobs:
   code-audit:
     environment: Test_Environment
@@ -24,6 +24,8 @@ jobs:
           ~/.cache/pypoetry
           ~/.cache/pip
         key: ${{ runner.os }}-deps-${{ hashFiles('**/poetry.lock') }}
+     
+    - name: Install dependencies
       run: |
-        pip install poetry==1.4.2
-        poetry install --with "code_audit"
+      pip install poetry==1.4.2
+      poetry install --with "code_audit"
