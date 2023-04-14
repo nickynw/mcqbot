@@ -1,10 +1,10 @@
-run-name: Code Audit - ${{ github.actor }} ${{ github.event_name }} for ${{ github.ref }} id ${{ github.run_id }}
-name: Code Audit
+run-name: ${{ github.actor }} ${{ github.event_name }} for ${{ github.ref }} id ${{ github.run_id }}
+name: Code Audit and Tests
 on:
   pull_request:
     types: [opened, reopened, synchronize]
 jobs:
-  build:
+  code-audit:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -33,6 +33,12 @@ jobs:
       run: |
         poetry install --with "code_audit"
 
+    - name: Cache virtual environment
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.HOME }}/.cache/pypoetry/virtualenvs
+        key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+
     - name: Assess imports with isort
       if: always()
       run: |
@@ -53,7 +59,23 @@ jobs:
       run: |
         poetry run pylint $(git ls-files '*.py')
 
-    - name: Run tests in github environment
-      if: always()
-      run: |
-        poetry run pytest
+  test-app:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9"]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Restore cached virtual environment
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.HOME }}/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: ${{ runner.os }}-poetry-
+
+      - name: Run basic app tests which do not require anything running.
+        if: always()
+        run: |
+          poetry run pytest ./tests/test_app
