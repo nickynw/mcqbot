@@ -84,6 +84,16 @@ jobs:
           key: venv-${{ hashFiles('poetry.lock') }}
           restore-keys: |
 
+      - name: Set environment variables
+        env:
+          NEO4J_USERNAME: neo4j
+          NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
+          NEO4J_URI: ${{ secrets.NEO4J_URI }}
+        run: |
+          echo "NEO4J_USERNAME=neo4j" >> .env
+          echo "NEO4J_PASSWORD=${NEO4J_PASSWORD}" >> .env
+          echo "NEO4J_URI=${NEO4J_URI}" >> .env
+
       - name: Run tests on neo4j database
         if: always()
         run: |
