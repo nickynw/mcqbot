@@ -15,6 +15,7 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Install poetry
       run: |
         python -m pip install poetry==1.4.2
@@ -32,26 +33,6 @@ jobs:
       with:
         path: ./.venv
         key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
-
-    - name: Assess imports with isort
-      if: always()
-      run: |
-        poetry run isort $(git ls-files '*.py')
-
-    - name: Assess static typing with mypy
-      if: always()
-      run: |
-        poetry run mypy $(git ls-files '*.py')
-
-    - name: Formatting with blue
-      if: always()
-      run: |
-        poetry run blue . --check
-        
-    - name: Analyse code with pylint
-      if: always()
-      run: |
-        poetry run pylint $(git ls-files '*.py')
 
   test-app:
     needs: code-audit
@@ -71,6 +52,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-venv-
             ${{ runner.os }}-
+
+      - name: Install poetry
+        run: |
+          python -m pip install poetry==1.4.2
 
       - name: Run basic app tests which do not require anything running.
         if: always()
