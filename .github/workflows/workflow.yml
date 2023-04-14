@@ -1,5 +1,9 @@
 run-name: ${{ github.actor }} ${{ github.event_name }} for ${{ github.ref }} id ${{ github.run_id }}
 name: Code Audit and Tests
+
+env:
+  CACHE_NAME: cache-poetry-${{ hashFiles('**/poetry.lock') }}
+
 on:
   pull_request:
     types: [opened, reopened, synchronize]
@@ -31,8 +35,10 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.cache/pypoetry/virtualenvs
-        key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
-        restore-keys: ${{ runner.os }}-poetry-
+        key: ${{ runner.os }}-${{ env.CACHE_NAME }}
+        restore-keys: |
+          ${{ runner.os }}-${{ env.CACHE_NAME }}
+          ${{ runner.os }}-
 
     - name: Assess imports with isort
       if: always()
@@ -68,8 +74,10 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: ${{ runner.os }}-poetry-
+          key: ${{ runner.os }}-${{ env.CACHE_NAME }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.CACHE_NAME }}
+            ${{ runner.os }}-
 
       - name: Run basic app tests which do not require anything running.
         if: always()
