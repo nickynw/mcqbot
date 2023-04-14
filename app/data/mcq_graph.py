@@ -145,7 +145,7 @@ class MCQGraph:
             query = """
             MATCH (node:Entity {name: $name})
             RETURN node;"""
-            logger.debug(log_query(query, name=name))
+            logger.debug(log_query(query=query, params={'name':name}))
             result = session.run(query, name=name)
             record = result.single()
             if record:
