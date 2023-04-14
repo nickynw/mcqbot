@@ -71,9 +71,10 @@ jobs:
 
     services:
       neo4j:
-        image: neo4j:latest
+        image: neo4j/docker-neo4j:latest
         ports:
-          - 7687/tcp
+          - 7474:7474
+          - 7687:7687
         env:       
           NEO4J_AUTH: ${{ secrets.NEO4J_USERNAME }}/${{ secrets.NEO4J_PASSWORD }}
 
