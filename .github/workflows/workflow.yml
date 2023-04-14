@@ -26,7 +26,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: venv
-        key: venv-${{ hashFiles('poetry.lock') }}
+        key: venv-${{ github.run_id }}-${{ hashFiles('poetry.lock') }}
         restore-keys: |
           venv-
 
@@ -35,7 +35,7 @@ jobs:
         python -m venv venv
         source venv/bin/activate
         pip install poetry==1.4.2
-        poetry install --with "code_audit"
+        poetry install -v --with "code_audit"
      
   test-app:
     needs: code-audit
@@ -51,7 +51,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: venv
-          key: venv-${{ hashFiles('poetry.lock') }}
+          key: venv-${{ github.run_id }}-${{ hashFiles('poetry.lock') }}
 
       - name: Run tests
         run: |
@@ -85,7 +85,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: venv
-          key: venv-${{ hashFiles('poetry.lock') }}
+          key: venv-${{ github.run_id }}-${{ hashFiles('poetry.lock') }}
 
       - name: Run tests on neo4j database
         if: always()
