@@ -23,21 +23,15 @@ jobs:
       run: |
         python -m poetry config virtualenvs.in-project true
 
+    - name: Install dependencies
+      run: |
+        poetry install --with "code_audit"
+
     - name: Cache the virtualenv
       uses: actions/cache@v2
       with:
         path: ./.venv
         key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
-
-    - name: Install dependencies
-      run: |
-        poetry install --with "code_audit"
-
-    - name: Cache virtual environment
-      uses: actions/cache@v2
-      with:
-        path: ${{ env.HOME }}/.cache/pypoetry/virtualenvs
-        key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
 
     - name: Assess imports with isort
       if: always()
@@ -72,9 +66,8 @@ jobs:
       - name: Restore cached virtual environment
         uses: actions/cache@v2
         with:
-          path: ${{ env.HOME }}/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: ${{ runner.os }}-poetry-
+        path: ./.venv
+        key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
 
       - name: Run basic app tests which do not require anything running.
         if: always()
