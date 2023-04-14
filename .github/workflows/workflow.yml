@@ -1,8 +1,5 @@
 name: Code Audit and Tests
 on:
-  push:
-    branches:
-      - main
   pull_request:
     types: [opened, reopened, synchronize]
 jobs:

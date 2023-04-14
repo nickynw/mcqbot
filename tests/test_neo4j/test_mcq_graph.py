@@ -23,9 +23,8 @@ def graph_fixture() -> Generator[MCQGraph, None, None]:
     """
     load_dotenv()
     neo4j_uri = os.getenv('NEO4J_URI')
-    neo4j_user = os.getenv('NEO4J_USERNAME')
     neo4j_password = os.getenv('NEO4J_PASSWORD')
-    graph = MCQGraph(neo4j_uri, neo4j_user, neo4j_password)
+    graph = MCQGraph(neo4j_uri, 'neo4j', neo4j_password)
     yield graph
     graph.delete_all()
     graph.close()
