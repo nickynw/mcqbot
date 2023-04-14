@@ -87,6 +87,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set environment variables
+      env:
+        NEO4J_USERNAME: ${{ secrets.NEO4J_USERNAME }}
+        NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
+        NEO4J_URI: ${{ secrets.NEO4J_URI }}
+      run: |
+        echo "NEO4J_USERNAME=${NEO4J_USERNAME}" >> .env
+        echo "NEO4J_PASSWORD=${NEO4J_PASSWORD}" >> .env
+        echo "NEO4J_URI=${NEO4J_URI}" >> .env
+
+      - name: Start Neo4j service
+        run: docker run -d --name neo4j -p 7474:7474 -p 7687:7687 -e NEO4J_AUTH=${NEO4J_USERNAME}/${NEO4J_PASSWORD} neo4j:latest
+
       - name: Restore the virtualenv cache
         uses: actions/cache@v2
         with:
@@ -99,16 +112,6 @@ jobs:
       - name: Install poetry
         run: |
           python -m pip install poetry==1.4.2
-
-      - name: Set environment variables
-        env:
-          NEO4J_USERNAME: ${{ secrets.NEO4J_USERNAME }}
-          NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
-          NEO4J_URI: ${{ secrets.NEO4J_URI }}
-        run: |
-          echo "NEO4J_USERNAME=${NEO4J_USERNAME}" >> .env
-          echo "NEO4J_PASSWORD=${NEO4J_PASSWORD}" >> .env
-          echo "NEO4J_URI=${NEO4J_URI}" >> .env
 
       - name: Run tests on neo4j database
         if: always()
