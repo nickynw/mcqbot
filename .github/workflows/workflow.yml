@@ -9,6 +9,7 @@ jobs:
   code-audit:
     environment: Test_Environment
     runs-on: ubuntu-latest
+    if: github.event.pull_request.base.ref == 'main'
 
     strategy:
       matrix:
@@ -40,6 +41,7 @@ jobs:
     needs: code-audit
     environment: Test_Environment
     runs-on: ubuntu-latest
+    if: github.event.pull_request.base.ref == 'main'
 
     steps:
       - name: Checkout code
@@ -60,6 +62,7 @@ jobs:
     needs: code-audit
     environment: Test_Environment
     runs-on: ubuntu-latest
+    if: github.event.pull_request.base.ref == 'main'
 
     steps:
       - name: Checkout code
@@ -67,11 +70,11 @@ jobs:
 
       - name: Set environment variables
         env:
-          NEO4J_USERNAME: ${{ secrets.NEO4J_USERNAME }}
+          NEO4J_USERNAME: neo4j
           NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
           NEO4J_URI: ${{ secrets.NEO4J_URI }}
         run: |
-          echo "NEO4J_USERNAME=${NEO4J_USERNAME}" >> .env
+          echo "NEO4J_USERNAME=neo4j" >> .env
           echo "NEO4J_PASSWORD=${NEO4J_PASSWORD}" >> .env
           echo "NEO4J_URI=${NEO4J_URI}" >> .env
 
