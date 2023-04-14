@@ -3,6 +3,7 @@ import logging
 from logging import Logger
 from typing import Any, Dict
 
+
 def create_logger(name: str) -> Logger:
     """
     Create a custom logger with configurations set to avoid repeating code.
