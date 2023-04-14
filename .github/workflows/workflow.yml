@@ -1,24 +1,20 @@
 run-name: ${{ github.actor }} ${{ github.event_name }} for ${{ github.ref }} id ${{ github.run_id }}
 name: Code Audit and Tests
-
-env:
-  CACHE_NAME: cache-poetry-${{ hashFiles('**/poetry.lock') }}
-
 on:
   pull_request:
     types: [opened, reopened, synchronize]
 jobs:
   code-audit:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9"]
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
       with:
-        python-version: 3.9
-
+        python-version: ${{ matrix.python-version }}
     - name: Install poetry
       run: |
         python -m pip install poetry==1.4.2
@@ -31,14 +27,11 @@ jobs:
       run: |
         poetry install --with "code_audit"
 
-    - name: Cache Poetry environment
+    - name: Cache the virtualenv
       uses: actions/cache@v2
       with:
-        path: ~/.cache/pypoetry/virtualenvs
-        key: ${{ runner.os }}-${{ env.CACHE_NAME }}
-        restore-keys: |
-          ${{ runner.os }}-${{ env.CACHE_NAME }}
-          ${{ runner.os }}-
+        path: ./.venv
+        key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
 
     - name: Assess imports with isort
       if: always()
@@ -70,14 +63,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Restore Poetry environment cache
+      - name: Restore the virtualenv cache
         uses: actions/cache@v2
         with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-${{ env.CACHE_NAME }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.CACHE_NAME }}
-            ${{ runner.os }}-
+          path: ./.venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-venv-
+          ${{ runner.os }}-
 
       - name: Run basic app tests which do not require anything running.
         if: always()
