@@ -3,7 +3,7 @@ from collections import Counter
 from typing import List, Union
 
 from app.models import MCQNode, MCQRelationship
-from app.utils.log_util import create_logger, session_query
+from app.utils.log_util import create_logger, log_query
 from neo4j import GraphDatabase
 
 logger = create_logger(__name__)
@@ -39,7 +39,7 @@ class MCQGraph:
             query = """
                     MATCH (node)
                     DETACH DELETE node;"""
-            logger.debug(session_query(query))
+            logger.debug(log_query(query))
             session.run(query)
             logger.info('All nodes removed from graph database.')
 
@@ -85,7 +85,7 @@ class MCQGraph:
         query = 'CREATE (:Entity $props);'
         with self.driver.session() as session:
             for node in nodes:
-                logger.debug(session_query(query, props=node.dict()))
+                logger.debug(log_query(query, props=node.dict()))
                 session.run(query, props=node.dict())
             logger.info('Created %s nodes.', len(nodes))
 
@@ -111,7 +111,7 @@ class MCQGraph:
                     """
                         % relationship.type
                     )
-                    logger.debug(session_query(query, **relationship.dict()))
+                    logger.debug(log_query(query, **relationship.dict()))
                     success = bool(
                         session.run(query, **relationship.dict()).single()
                     )
@@ -145,7 +145,7 @@ class MCQGraph:
             query = """
             MATCH (node:Entity {name: $name})
             RETURN node;"""
-            logger.debug(session_query(query, name=name))
+            logger.debug(log_query(query, name=name))
             result = session.run(query, name=name)
             record = result.single()
             if record:
@@ -168,6 +168,6 @@ class MCQGraph:
             RETURN r"""
                 % relationship.type
             )
-            logger.debug(session_query(query, **relationship.dict()))
+            logger.debug(log_query(query, **relationship.dict()))
             result = session.run(query, **relationship.dict())
             return bool(result.single())
