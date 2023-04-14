@@ -22,9 +22,9 @@ jobs:
       uses: actions/cache@v2
       with:
         path: venv
-        key: venv-${{ github.run_id }}-${{ hashFiles('poetry.lock') }}
+        key: venv-${{ hashFiles('poetry.lock') }}
         restore-keys: |
-          venv--${{ github.run_id }}-
+          venv-
 
     - name: Install dependencies
       run: |
@@ -46,7 +46,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: venv
-          key: venv-${{ github.run_id }}-${{ hashFiles('poetry.lock') }}
+          key: venv-${{ hashFiles('poetry.lock') }}
           restore-keys: |
 
       - name: Run tests
@@ -80,7 +80,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: venv
-          key: venv-${{ github.run_id }}-${{ hashFiles('poetry.lock') }}
+          key: venv-${{ hashFiles('poetry.lock') }}
           restore-keys: |
 
       - name: Run tests on neo4j database
