@@ -61,6 +61,9 @@ jobs:
             ${{ runner.os }}-deps-python-
             ${{ runner.os }}-
 
+      - name: Add Poetry to PATH
+        run: echo "${{ runner.temp }}/cache/pypoetry/bin" >> $GITHUB_PATH
+
       - name: Run basic app tests which do not require anything running.
         if: always()
         run: |
