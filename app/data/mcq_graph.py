@@ -13,11 +13,16 @@ class MCQGraph:
     """
     This object forms a data access layer via neo4j python driver to the neo4j graph database.
     """
+
     def __init__(self, uri, user, password):
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
         with self.driver.session() as session:
-            session.run("CREATE CONSTRAINT IF NOT EXISTS FOR (e:Entity) REQUIRE e.name IS UNIQUE;")
-        logger.info('New MCQGraph Object created - connection opened. Added constraint.')
+            session.run(
+                'CREATE CONSTRAINT IF NOT EXISTS FOR (e:Entity) REQUIRE e.name IS UNIQUE;'
+            )
+        logger.info(
+            'New MCQGraph Object created - connection opened. Added constraint.'
+        )
 
     def close(self):
         """
@@ -41,7 +46,7 @@ class MCQGraph:
     def create_nodes(self, nodes: List[MCQNode]):
         """
         Creates nodes in the database using a list of input nodes with expected properties.
-        
+
         Args:
             nodes (List[MCQNode]): input nodes.
 
@@ -89,7 +94,7 @@ class MCQGraph:
         Creates relationships given a list of input relationships.
 
         Args:
-            relationships (List[MCQRelationship]): list of relationships to create        
+            relationships (List[MCQRelationship]): list of relationships to create
 
         Raises:
             ValueError: if a relationship fail to be created.
@@ -107,20 +112,24 @@ class MCQGraph:
                         % relationship.type
                     )
                     logger.debug(session_query(query, **relationship.dict()))
-                    success = bool(session.run(query, **relationship.dict()).single())
+                    success = bool(
+                        session.run(query, **relationship.dict()).single()
+                    )
                     if not success:
                         logger.warning(
-                                'Failed to create relationship: %s', str(relationship),
-                                extra={'relationship': relationships},
+                            'Failed to create relationship: %s',
+                            str(relationship),
+                            extra={'relationship': relationships},
                         )
-                        raise ValueError('No relationships created due to failed relationships within input.')
+                        raise ValueError(
+                            'No relationships created due to failed relationships within input.'
+                        )
             except Exception:
                 session.rollback()  # roll back the transaction if an exception occurred
                 raise
         logger.info(
             'Created %s relationships in the database.', len(relationships)
         )
-
 
     def has_name(self, name: str) -> Union[MCQNode, None]:
         """
