@@ -21,7 +21,7 @@ jobs:
     - name: Cache venv directory
       uses: actions/cache@v2
       with:
-        path: ./.venv
+        path: venv
         key: venv-${{ hashFiles('poetry.lock') }}
         restore-keys: |
           venv-
@@ -45,13 +45,13 @@ jobs:
       - name: Restore venv directory from cache
         uses: actions/cache@v2
         with:
-          path: ./.venv
+          path: venv
           key: venv-${{ hashFiles('poetry.lock') }}
           restore-keys: |
 
       - name: Run tests
         run: |
-          source ./venv/bin/activate
+          source venv/bin/activate
           poetry run pytest ./tests/test_app
 
   test-neo4j:
@@ -60,15 +60,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Restore venv directory from cache
-        uses: actions/cache@v2
-        with:
-          path: ./.venv
-          key: venv-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
 
       - name: Set environment variables
         env:
@@ -81,13 +72,24 @@ jobs:
           echo "NEO4J_URI=${NEO4J_URI}" >> .env
 
       - name: Start Neo4j service
-        run: |
-          source .venv/bin/activate
-          docker-compose -f docker-compose.dev.yml up --detach graph
+            run: docker-compose -f docker-compose.dev.yml up --detach graph
 
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Restore venv directory from cache
+        uses: actions/cache@v2
+        with:
+          path: venv
+          key: venv-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+
+      - name: Install poetry
+        run: |
+          source venv/bin/activate
+          python -m pip install poetry==1.4.2
       - name: Run tests on neo4j database
         if: always()
         run: |
-          source .venv/bin/activate
+          source venv/bin/activate
           poetry run pytest ./tests/test_neo4j
-
