@@ -85,11 +85,11 @@ jobs:
           key: venv-${{ hashFiles('poetry.lock') }}
           restore-keys: |
 
-      - name: Install poetry
+      - name: Install Neo4j dependencies
         run: |
           source venv/bin/activate
-          python -m pip install poetry==1.4.2
-          
+          poetry install -v --with "neo4j"
+
       - name: Run tests on neo4j database
         if: always()
         run: |

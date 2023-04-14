@@ -11,15 +11,12 @@ python = "^3.9"
 fastapi = "^0.95.0"
 uvicorn = {extras = ["standard"], version = "^0.21.1"}
 httpx = "^0.23.3"
-levenshtein = "^0.20.9"
-pyphen = "^0.14.0"
 numpy = "^1.24.2"
 ratelimit = "^2.2.1"
 slowapi = "^0.1.8"
 pydantic = "^1.10.7"
-networkx = "^3.1"
-py2neo = "^2021.2.3"
-neo4j = "^5.7.0"
+levenshtein = "^0.20.9"
+pyphen = "^0.14.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.2.2"
@@ -28,6 +25,10 @@ isort = "^5.12.0"
 blue = "^0.9.1"
 mypy = "^1.2.0"
 python-dotenv = "^1.0.0"
+
+[tool.poetry.group.neo4j.dependencies]
+neo4j = "^5.7.0"
+platformdirs = "2.6.2"
 
 [tool.poetry.group.code_audit.dependencies]
 pytest = "^7.2.2"
