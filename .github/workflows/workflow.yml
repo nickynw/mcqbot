@@ -34,11 +34,6 @@ jobs:
         source venv/bin/activate
         pip install poetry==1.4.2
         poetry install --with "code_audit"
-
-    - name: Run tests
-      run: |
-          source venv/bin/activate
-          poetry run pytest ./tests/test_app
      
   test-app:
     needs: code-audit
