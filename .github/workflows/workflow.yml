@@ -51,7 +51,7 @@ jobs:
 
       - name: Run tests
         run: |
-          source venv/bin/activate
+          source ./venv/bin/activate
           poetry run pytest ./tests/test_app
 
   test-neo4j:
@@ -82,12 +82,12 @@ jobs:
 
       - name: Start Neo4j service
         run: |
-          source venv/bin/activate
+          source .venv/bin/activate
           docker-compose -f docker-compose.dev.yml up --detach graph
 
       - name: Run tests on neo4j database
         if: always()
         run: |
-          source venv/bin/activate
+          source .venv/bin/activate
           poetry run pytest ./tests/test_neo4j
 
