@@ -35,26 +35,31 @@ jobs:
 
     - name: Install dependencies
       run: |
+        source venv/bin/activate
         poetry install --with "code_audit"
 
     - name: Assess imports with isort
       if: always()
       run: |
+        source venv/bin/activate
         poetry run isort $(git ls-files '*.py')
 
     - name: Assess static typing with mypy
       if: always()
       run: |
+        source venv/bin/activate
         poetry run mypy $(git ls-files '*.py')
 
     - name: Formatting with blue
       if: always()
       run: |
+        source venv/bin/activate
         poetry run blue . --check
         
     - name: Analyse code with pylint
       if: always()
       run: |
+        source venv/bin/activate
         poetry run pylint $(git ls-files '*.py')
      
   test-app:
