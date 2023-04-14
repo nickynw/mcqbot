@@ -32,6 +32,30 @@ jobs:
         source venv/bin/activate
         pip install poetry==1.4.2
         poetry install -v --with "code_audit"
+
+    - name: Install dependencies
+      run: |
+        poetry install --with "code_audit"
+
+    - name: Assess imports with isort
+      if: always()
+      run: |
+        poetry run isort $(git ls-files '*.py')
+
+    - name: Assess static typing with mypy
+      if: always()
+      run: |
+        poetry run mypy $(git ls-files '*.py')
+
+    - name: Formatting with blue
+      if: always()
+      run: |
+        poetry run blue . --check
+        
+    - name: Analyse code with pylint
+      if: always()
+      run: |
+        poetry run pylint $(git ls-files '*.py')
      
   test-app:
     needs: code-audit
@@ -60,7 +84,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
 
       - name: Checkout code
         uses: actions/checkout@v2

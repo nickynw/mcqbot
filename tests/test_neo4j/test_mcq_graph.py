@@ -5,7 +5,7 @@ from typing import Generator
 
 import pytest
 from app.data.mcq_graph import MCQGraph
-from app.models import MCQNode
+from app.models import MCQNode, MCQRelationship
 from dotenv import load_dotenv
 
 logging.getLogger('neo4j.bolt').setLevel(logging.DEBUG)
@@ -86,3 +86,16 @@ class TestMCQGraph:
             sample_graph.create_nodes(
                 [MCQNode(**node) for node in duplicate_properties]
             )
+
+    def test_relationships(self, sample_graph):
+        """Tests whether we can create relationships and checks if they fail."""
+        relationship = MCQRelationship(
+            **{
+                'start_node': 'Sample Node 1',
+                'type': 'is_linked_to',
+                'end_node': 'Sample Node 2',
+            }
+        )
+        assert sample_graph.has_relationship(relationship) is False
+        sample_graph.create_relationships([relationship])
+        assert sample_graph.has_relationship(relationship) is True
