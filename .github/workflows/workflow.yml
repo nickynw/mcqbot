@@ -9,7 +9,6 @@ jobs:
   code-audit:
     environment: Test_Environment
     runs-on: ubuntu-latest
-    if: github.event.pull_request.base.ref == 'main'
 
     strategy:
       matrix:
@@ -41,7 +40,6 @@ jobs:
     needs: code-audit
     environment: Test_Environment
     runs-on: ubuntu-latest
-    if: github.event.pull_request.base.ref == 'main'
 
     steps:
       - name: Checkout code
@@ -52,6 +50,7 @@ jobs:
         with:
           path: venv
           key: venv-${{ github.run_id }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
 
       - name: Run tests
         run: |
@@ -62,7 +61,6 @@ jobs:
     needs: code-audit
     environment: Test_Environment
     runs-on: ubuntu-latest
-    if: github.event.pull_request.base.ref == 'main'
 
     steps:
       - name: Checkout code
@@ -86,6 +84,16 @@ jobs:
         with:
           path: venv
           key: venv-${{ github.run_id }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+
+      - name: Check Neo4j instance
+        run: |
+          while [ "$(curl --write-out '%{http_code}' --silent --output /dev/null http://localhost:7474/db/data/)" != "200" ]
+          do
+            echo "Waiting for Neo4j to start..."
+            sleep 10
+          done
+          echo "Neo4j is now running"
 
       - name: Run tests on neo4j database
         if: always()
