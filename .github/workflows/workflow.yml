@@ -24,7 +24,7 @@ jobs:
         path: venv
         key: venv-${{ github.run_id }}-${{ hashFiles('poetry.lock') }}
         restore-keys: |
-          venv-
+          venv--${{ github.run_id }}-
 
     - name: Install dependencies
       run: |
