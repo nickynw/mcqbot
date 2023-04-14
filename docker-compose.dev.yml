@@ -12,19 +12,13 @@ services:
     ports:
       - "80:80"
   graph:
-    image: neo4j
+    image: neo4j:latest
     restart: unless-stopped
     networks:
     - mcqbot
-    build: .
     ports:
       - "7474:7474"
       - "7687:7687"
-    volumes:
-      - ./neo4j/data:/data
-      - ./neo4j/logs:/logs
-      - ./neo4j/import:/var/lib/neo4j/import
-      - ./neo4j/plugins:/plugins
     environment:
-      NEO4J_AUTH: neo4j/password
+      NEO4J_AUTH: ${NEO4J_USERNAME}/${NEO4J_PASSWORD}
     container_name: mcqbot-graph
