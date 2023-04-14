@@ -1,8 +1,5 @@
 name: Code Audit and Tests
 on:
-  push:
-    branches:
-      - main
   pull_request:
     types: [opened, reopened, synchronize]
 jobs:
@@ -25,7 +22,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: venv
-        key: venv-${{ github.run_id }}-${{ hashFiles('poetry.lock') }}
+        key: venv-${{ hashFiles('poetry.lock') }}
         restore-keys: |
           venv-
 
@@ -35,6 +32,35 @@ jobs:
         source venv/bin/activate
         pip install poetry==1.4.2
         poetry install -v --with "code_audit"
+
+    - name: Install dependencies
+      run: |
+        source venv/bin/activate
+        poetry install --with "code_audit"
+
+    - name: Assess imports with isort
+      if: always()
+      run: |
+        source venv/bin/activate
+        poetry run isort $(git ls-files '*.py')
+
+    - name: Assess static typing with mypy
+      if: always()
+      run: |
+        source venv/bin/activate
+        poetry run mypy $(git ls-files '*.py')
+
+    - name: Formatting with blue
+      if: always()
+      run: |
+        source venv/bin/activate
+        poetry run blue . --check
+        
+    - name: Analyse code with pylint
+      if: always()
+      run: |
+        source venv/bin/activate
+        poetry run pylint $(git ls-files '*.py')
      
   test-app:
     needs: code-audit
@@ -49,7 +75,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: venv
-          key: venv-${{ github.run_id }}-${{ hashFiles('poetry.lock') }}
+          key: venv-${{ hashFiles('poetry.lock') }}
           restore-keys: |
 
       - name: Run tests
@@ -63,6 +89,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -83,17 +110,13 @@ jobs:
         uses: actions/cache@v2
         with:
           path: venv
-          key: venv-${{ github.run_id }}-${{ hashFiles('poetry.lock') }}
+          key: venv-${{ hashFiles('poetry.lock') }}
           restore-keys: |
 
-      - name: Check Neo4j instance
+      - name: Install Neo4j dependencies
         run: |
-          while [ "$(curl --write-out '%{http_code}' --silent --output /dev/null http://localhost:7474/db/data/)" != "200" ]
-          do
-            echo "Waiting for Neo4j to start..."
-            sleep 10
-          done
-          echo "Neo4j is now running"
+          source venv/bin/activate
+          poetry install -v --with "neo4j"
 
       - name: Run tests on neo4j database
         if: always()

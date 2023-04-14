@@ -3,5 +3,7 @@
         "./app/utils",
         "./app",
         "./app/data"
-    ]
+    ],
+    "python.pythonPath": "venv/bin/python",
+    "python.linting.pylintPath": "venv/bin/pylint"
 }
