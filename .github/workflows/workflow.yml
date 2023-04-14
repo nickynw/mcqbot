@@ -66,16 +66,11 @@ jobs:
       - name: Restore the virtualenv cache
         uses: actions/cache@v2
         with:
-<<<<<<< HEAD
-        path: ./.venv
-        key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
-=======
           path: ./.venv
           key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-venv-
-            ${{ runner.os }}-
->>>>>>> main
+        restore-keys: |
+          ${{ runner.os }}-venv-
+          ${{ runner.os }}-
 
       - name: Run basic app tests which do not require anything running.
         if: always()
