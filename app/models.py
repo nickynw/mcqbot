@@ -3,7 +3,6 @@
 
 from typing import List
 
-from neo4j.graph import Node, Relationship
 from pydantic import BaseModel
 
 
@@ -27,10 +26,6 @@ class MCQNode(BaseModel):
         extra = 'forbid'
         sort_key = 'name'
 
-    @classmethod
-    def from_node(cls, node: Node):
-        return cls(**dict(node.items()))
-
     def __lt__(self: 'MCQNode', other: 'MCQNode'):
         return self.name < other.name
 
@@ -44,7 +39,3 @@ class MCQRelationship(BaseModel):
 
     class Config:
         extra = 'forbid'
-
-    @classmethod
-    def from_relationship(cls, relationship: Relationship):
-        return cls(**dict(relationship.items()))
