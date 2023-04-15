@@ -26,6 +26,9 @@ blue = "^0.9.1"
 mypy = "^1.2.0"
 python-dotenv = "^1.0.0"
 
+[tool.poetry.group.nx.dependencies]
+networkx = "^3.1"
+
 [tool.poetry.group.neo4j.dependencies]
 neo4j = "^5.7.0"
 platformdirs = "2.6.2"
