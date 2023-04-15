@@ -12,7 +12,7 @@ logger = create_logger(__name__)
 
 class NXGraph(MCQGraph):
     """
-    This object forms a data access layer via neo4j python driver to the neo4j graph database.
+    This object stores and pulls data from  a local graph database object in memory, as opposed to a seperate database.
     """
 
     def __init__(self):
