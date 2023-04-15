@@ -9,7 +9,7 @@ logger = create_logger(__name__)
 
 class MCQGraph:
     """
-    This object forms a data access layer via neo4j python driver to the neo4j graph database.
+    This is a baseclass for the interface used by other modules to interact with graph databases.
     """
 
     def __init__(self):

@@ -68,7 +68,7 @@ def single_node_graph_fixture(
 
 @pytest.mark.usefixtures('graph', 'sample_graph', 'single_node_graph')
 class TestNeo4JGraph:
-    """Test class for MCQGraph"""
+    """Test class for Neo4JGraph"""
 
     def test_mcq_graph(self):
         """Run all the tests in mcq graph template file with these fixtures"""
