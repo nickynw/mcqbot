@@ -151,7 +151,7 @@ class Neo4JGraph(MCQGraph):
             result = session.run(query, name=name)
             record = result.single()
             if record:
-                return MCQNode.from_node(record['node'])
+                return MCQNode(**dict(record['node'].items()))
         return None
 
     def has_relationship(self, relationship: MCQRelationship) -> bool:
