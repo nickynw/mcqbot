@@ -81,7 +81,33 @@ jobs:
       - name: Run tests
         run: |
           source venv/bin/activate
-          poetry run pytest ./tests/test_app
+          poetry run pytest ./tests/test_app/
+
+  test-nx:
+    needs: code-audit
+    environment: Test_Environment
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Restore venv directory from cache
+        uses: actions/cache@v2
+        with:
+          path: venv
+          key: venv-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+
+      - name: Install Networkx dependencies
+        run: |
+          source venv/bin/activate
+          poetry install -v --with "nx"
+
+      - name: Run tests
+        run: |
+          source venv/bin/activate
+          poetry run pytest ./tests/test_nx/
 
   test-neo4j:
     needs: code-audit
@@ -122,4 +148,4 @@ jobs:
         if: always()
         run: |
           source venv/bin/activate
-          poetry run pytest ./tests/test_neo4j
+          poetry run pytest ./tests/test_neo4j/

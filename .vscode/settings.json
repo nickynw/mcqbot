@@ -2,7 +2,8 @@
     "python.analysis.extraPaths": [
         "./app/utils",
         "./app",
-        "./app/data"
+        "./app/data",
+        "./tests/"
     ],
     "python.pythonPath": "venv/bin/python",
     "python.linting.pylintPath": "venv/bin/pylint"

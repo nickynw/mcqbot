@@ -1,59 +1,25 @@
 """Test the MCQGraph class object interface with Neo4J Database, are operations working as expected"""
 import logging
-import os
-from typing import Generator
 
 import pytest
 from app.data.mcq_graph import MCQGraph
 from app.models import MCQNode, MCQRelationship
-from dotenv import load_dotenv
+
+pytestmark = pytest.mark.skip(
+    reason='This module is not meant to be run directly, it is a template.'
+)
 
 logging.getLogger('neo4j.bolt').setLevel(logging.DEBUG)
 
 sample_properties = [{'name': 'Sample Node 1'}, {'name': 'Sample Node 2'}]
 
 
-@pytest.fixture(name='graph')
-def graph_fixture() -> Generator[MCQGraph, None, None]:
-    """
-    Creates fixtures MCQGraph object to work with
-
-    Yields:
-        Generator[MCQGraph]: MCQGraph object that connects via driver to database.
-    """
-    load_dotenv()
-    neo4j_uri = os.getenv('NEO4J_URI')
-    neo4j_password = os.getenv('NEO4J_PASSWORD')
-    graph = MCQGraph(neo4j_uri, 'neo4j', neo4j_password)
-    yield graph
-    graph.delete_all()
-    graph.close()
-
-
-@pytest.fixture(name='sample_graph')
-def sample_graph_fixture(graph: MCQGraph) -> Generator[MCQGraph, None, None]:
-    """
-    Populates the database with sample nodes.
-
-    Args:
-        graph (Generator[MCQGraph]): An empty databases and MCQGraph driver.
-
-    Yields:
-        Generator[MCQGraph]: A database populated with sample nodes.
-    """
-    graph.create_nodes([MCQNode(**node) for node in sample_properties])
-    yield graph
-
-
 class TestMCQGraph:
     """Test class for MCQGraph"""
 
-    def test_has_name(self, graph: MCQGraph):
+    def test_has_name(self, single_node_graph: MCQGraph):
         """Tests whether the has_name function can successfully check a node exists."""
-        with graph.driver.session() as session:
-            node = {'name': 'Sample Node 0'}
-            session.run('CREATE (:Entity $prop)', prop=node)
-        assert graph.has_name('Sample Node 0')
+        assert single_node_graph.has_name('Sample Node 0')
 
     def test_create_nodes(self, graph: MCQGraph):
         """Tests whether the create node function successfully created sample nodes and checks they exist."""
