@@ -1,11 +1,10 @@
-"""Generates a graph from some sample data"""
+"""Test the Fake Word Generator Class"""
+import random
 from typing import Dict, List
 
-import networkx as nx
-from app.models import MCQNode, MCQRelationship
-
+from app.utils.mcq_generator import MCQGenerator
+from app.models import MCQ, MCQNode, MCQRelationship
 from app.data.nx_graph import NXGraph
-
 
 data: Dict[str, List[str]] = {
     'Neurotransmitter': [
@@ -42,13 +41,8 @@ data: Dict[str, List[str]] = {
 }
 
 
-def create_graph() -> nx.DiGraph:
-    """
-    Creates a network x graph from data.
-
-    Returns:
-        nx.DiGraph: a directed graph containing nodes representing units of information
-    """
+def test_mcq_generator():
+    """A test to show that the MCQ generator is working correctly."""
     graph = NXGraph()
     nodes = [MCQNode(**{'name': key}) for key in data.keys()]
     relationships = []
@@ -61,4 +55,10 @@ def create_graph() -> nx.DiGraph:
             )
     graph.create_nodes(nodes=nodes)
     graph.create_relationships(relationships=relationships)
-    return graph
+    mcq = MCQGenerator(graph, seed=2)
+    output = mcq.generate()
+    assert output == MCQ(
+        answer='Glycine',
+        topic='Neurotransmitter',
+        choices=['GABA', 'Serotonin', 'Glycine'],
+    )
