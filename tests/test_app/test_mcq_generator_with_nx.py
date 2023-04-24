@@ -1,10 +1,11 @@
 """Test the Fake Word Generator Class"""
 import random
-from typing import Dict, List
+from typing import Dict, Generator, List
 
 from app.utils.mcq_generator import MCQGenerator
 from app.models import MCQ, MCQNode, MCQRelationship
 from app.data.nx_graph import NXGraph
+from mcq_graph import MCQGraph
 
 data: Dict[str, List[str]] = {
     'Neurotransmitter': [
@@ -40,9 +41,14 @@ data: Dict[str, List[str]] = {
     'Muscimol': [],
 }
 
+@pytest.fixture(name='graph')
+def graph_fixture() -> Generator[MCQGraph, None, None]:
+    """
+    Creates fixtures MCQGraph object to work with
 
-def test_mcq_generator():
-    """A test to show that the MCQ generator is working correctly."""
+    Yields:
+        Generator[MCQGraph]: MCQGraph object that connects via driver to database.
+    """
     graph = NXGraph()
     nodes = [MCQNode(**{'name': key}) for key in data.keys()]
     relationships = []
@@ -55,6 +61,13 @@ def test_mcq_generator():
             )
     graph.create_nodes(nodes=nodes)
     graph.create_relationships(relationships=relationships)
+    yield graph
+    graph.delete_all()
+
+
+def test_mcq_generator(graph):
+    """A test to show that the MCQ generator is working correctly."""
+
     mcq = MCQGenerator(graph, seed=2)
     output = mcq.generate()
     assert output == MCQ(
