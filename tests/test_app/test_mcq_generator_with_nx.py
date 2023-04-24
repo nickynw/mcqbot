@@ -5,7 +5,9 @@ from typing import Dict, Generator, List
 from app.utils.mcq_generator import MCQGenerator
 from app.models import MCQ, MCQNode, MCQRelationship
 from app.data.nx_graph import NXGraph
-from mcq_graph import MCQGraph
+from app.data.mcq_graph import MCQGraph
+
+import pytest
 
 data: Dict[str, List[str]] = {
     'Neurotransmitter': [
