@@ -1,6 +1,6 @@
 """Object for acessing neo4j graph database"""
 from collections import Counter
-from typing import List, Union
+from typing import List, Optional, Union
 
 from app.data.mcq_graph import MCQGraph
 from app.models import MCQNode, MCQRelationship
@@ -8,6 +8,7 @@ from app.utils.log_util import create_logger, log_query
 from neo4j import GraphDatabase
 
 import pandas as pd
+import random
 
 logger = create_logger(__name__)
 
@@ -58,7 +59,7 @@ class Neo4JGraph(MCQGraph):
 
         # Check for duplicates within the database
         matches = [
-            y for y in [self.has_name(x.name) for x in nodes] if y is not None
+            y for y in [self.get_node(x.name) for x in nodes] if y is not None
         ]
         if matches:
             logger.error(
@@ -111,7 +112,7 @@ class Neo4JGraph(MCQGraph):
             'Created %s relationships in the database.', len(relationships)
         )
 
-    def has_name(self, name: str) -> Union[MCQNode, None]:
+    def get_node(self, name: str) -> Union[MCQNode, None]:
         with self.driver.session() as session:
             query = """
                 MATCH (node:Entity {name: $name})
@@ -137,7 +138,77 @@ class Neo4JGraph(MCQGraph):
             result = session.run(query, **relationship.dict())
             return bool(result.single())
 
-    def similarity_matrix(self, relationship: MCQRelationship):
+    def random_relationship(
+        self, seed: Optional[int] = None
+    ) -> MCQRelationship:
+        with self.driver.session() as session:
+            query_count = """
+            MATCH ()-[relationship]->()
+            RETURN COUNT(relationship) AS num_rels
+            """
+            logger.debug(log_query(query=query_count))
+            num_rels = session.run(query_count).single()['num_rels']
+            if seed:
+                random.seed(seed)
+            random_index = random.randint(0, num_rels)
+            query = """
+                MATCH (start_node)-[relationship]->(end_node)
+                RETURN start_node, relationship, end_node
+                ORDER BY start_node.name
+                SKIP $n - 1
+                LIMIT 1
+            """
+            logger.debug(log_query(query=query, n=random_index))
+            result = session.run(query, n=random_index).single()
+            relationship = MCQRelationship(
+                start_node=result['start_node']['name'],
+                end_node=result['end_node']['name'],
+                type=result['relationship'].type,
+            )
+            return relationship
+
+    def related_nodes(self, relationship: MCQRelationship) -> List[MCQNode]:
+        with self.driver.session() as session:
+            query = """
+            MATCH (start_node:Entity {name: $end_node})-[r:%s]-(b:Entity {name: $start_node})-[r2:%s]-(related_node:Entity)
+            RETURN related_node
+            """ % (
+                relationship.type,
+                relationship.type,
+            )
+            logger.debug(
+                log_query(
+                    query,
+                    end_node=relationship.end_node,
+                    start_node=relationship.start_node,
+                )
+            )
+            result = session.run(
+                query,
+                end_node=relationship.end_node,
+                start_node=relationship.start_node,
+            )
+            nodes = [
+                MCQNode(**dict(record['related_node'].items()))
+                for record in result
+            ]
+            return nodes
+
+    def connected_nodes(self, node: MCQNode) -> List[MCQNode]:
+        with self.driver.session() as session:
+            query = """
+                MATCH (start_node:Entity {name: $node})--(end_node:Entity)
+                RETURN end_node
+            """
+            logger.debug(log_query(query, node=node.name))
+            result = session.run(query, node=node.name)
+            nodes = [
+                MCQNode(**dict(record['end_node'].items()))
+                for record in result
+            ]
+            return nodes
+
+    def similarity_matrix(self, relationship: MCQRelationship) -> pd.DataFrame:
         graph_projection = 'graph_projection'
         end_node = relationship.end_node
         with self.driver.session() as session:

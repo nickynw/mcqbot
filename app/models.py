@@ -1,7 +1,7 @@
 """One file to store models for pydantic, no linting for this file as it doesnt follow a lot conventions."""
 # pylint: skip-file
 
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -21,6 +21,7 @@ class MCQNode(BaseModel):
     """Model for Nodes in Neo4J"""
 
     name: str
+    info: Optional[str] = ''
 
     class Config:
         extra = 'forbid'
