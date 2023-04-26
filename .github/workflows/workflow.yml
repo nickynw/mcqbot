@@ -147,7 +147,6 @@ jobs:
 
   clean-cache:
     needs: [test-app, test-nx, test-neo4j]
-    if: ${{ test-app.outcome == 'success' && test-nx.outcome == 'success' && test-neo4j.outcome == 'success'}}
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
