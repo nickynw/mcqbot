@@ -14,8 +14,8 @@ RUN poetry install --no-interaction --no-ansi --verbose
 
 ENV MODULE_NAME=app.main
 ENV APP_MODULE=app.main:app
-ENV PORT=80
+ENV PORT=8000
 
-EXPOSE 80
+EXPOSE 8000
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
