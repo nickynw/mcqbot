@@ -149,8 +149,7 @@ class Neo4JGraph(MCQGraph):
             num_rels = session.run(query_count).single()['num_rels']
             if num_rels < 1:
                 raise ValueError('Empty Database.')
-            if seed:
-                random.seed(seed)
+            random.seed(seed)
             random_index = random.randint(0, num_rels)
             query = """
                 MATCH (start_node)-[relationship]->(end_node)

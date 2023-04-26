@@ -1,12 +1,11 @@
 # pylint: disable=duplicate-code
-"""Provides fixtures shared between different test files."""
-import pytest
+"""Provides a sample graph for use in the main app."""
+from app.data.nx_graph import NXGraph
 from app.models import MCQNode, MCQRelationship
 
 
-@pytest.fixture(scope='session', name='mcq_graph')
-def mcq_graph(request):
-    """Fixture for creating and populating an MCQ Graph"""
+def new_graph() -> NXGraph:
+    """Provides a sample graph to use."""
     data = {
         'Neurotransmitter': [
             'Serotonin',
@@ -54,10 +53,7 @@ def mcq_graph(request):
                         }
                     )
                 )
-    graph = request.param
-    graph.delete_all()
+    graph = NXGraph()
     graph.create_nodes(nodes=nodes)
     graph.create_relationships(relationships=relationships)
-    yield graph
-    graph.delete_all()
-    graph.close()
+    return graph
