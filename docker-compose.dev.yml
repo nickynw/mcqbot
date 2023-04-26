@@ -10,7 +10,7 @@ services:
       context: .
       dockerfile: ./app.Dockerfile
     ports:
-      - "80:80"
+      - "8000:80"
   graph:
     image: neo4j:latest
     restart: unless-stopped
