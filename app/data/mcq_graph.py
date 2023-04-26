@@ -3,7 +3,6 @@ from typing import List, Optional, Union
 
 from app.models import MCQNode, MCQRelationship
 from app.utils.log_util import create_logger
-
 from pandas import DataFrame
 
 logger = create_logger(__name__)
@@ -78,6 +77,7 @@ class MCQGraph:
         Returns:
             MCQRelationship: randomly chosen relationship
         """
+        raise NotImplementedError()
 
     def related_nodes(self, relationship: MCQRelationship) -> List[MCQNode]:
         """
@@ -89,6 +89,7 @@ class MCQGraph:
         Returns:
             List[MCQNode]: List of related nodes
         """
+        raise NotImplementedError()
 
     def connected_nodes(self, node: MCQNode) -> List[MCQNode]:
         """
@@ -100,6 +101,7 @@ class MCQGraph:
         Returns:
             List[MCQNode]: list of all connected nodes
         """
+        raise NotImplementedError()
 
     def similarity_matrix(self, relationship: MCQRelationship) -> DataFrame:
         """_summary_
@@ -110,3 +112,4 @@ class MCQGraph:
         Returns:
             pd.DataFrame: Dataframe containing similarity comparisons
         """
+        raise NotImplementedError()
