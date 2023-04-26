@@ -1,15 +1,13 @@
 """Object for acessing neo4j graph database"""
+import random
 from collections import Counter
 from typing import List, Optional, Union
 
 import networkx as nx
+import pandas as pd
 from app.data.mcq_graph import MCQGraph
 from app.models import MCQNode, MCQRelationship
 from app.utils.log_util import create_logger
-
-import random
-
-import pandas as pd
 
 logger = create_logger(__name__)
 
@@ -131,8 +129,8 @@ class NXGraph(MCQGraph):
         df['Node1'] = df.index
         df = pd.melt(
             df,
-            id_vars='Node1',
-            value_vars=df.columns,
+            id_vars=['Node1'],
+            value_vars=list(df.columns),
             var_name='Node2',
             value_name='similarity',
         )
