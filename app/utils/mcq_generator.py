@@ -1,10 +1,10 @@
 """A utility module for MCQBot"""
 
 import random
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
-import networkx as nx
-from app.models import MCQ
+from app.data.mcq_graph import MCQGraph
+from app.models import MCQ, MCQRelationship
 from app.utils.fake_word_generator import FakeWordGenerator
 
 
@@ -16,12 +16,12 @@ class MCQGenerator:
 
     """
 
-    def __init__(self, graph: nx.DiGraph):
+    def __init__(self, graph: MCQGraph, seed: Optional[int] = None):
         self.graph = graph
-        self.edges = list(self.graph.edges())
+        self.seed = seed
 
     def __collect_nodes(
-        self, answer: str, topic: str
+        self, relationship: MCQRelationship
     ) -> Tuple[List[str], List[str]]:
         """
         Collects nearby nodes and neighbours to determine distractors and all potential correct answers for given topic/edge.
@@ -34,13 +34,18 @@ class MCQGenerator:
             Tuple[List[str], List[str]]: A list of all possible answers to a question and plausible distractors
         """
         # Answers are all other nodes that connect to this given topic in the same direction.
-        answers = [x[1] for x in self.edges if x[0] == topic]
+        answers = [x.name for x in self.graph.related_nodes(relationship)]
 
         # Exclusions are made up of all nodes that connect to the original answer node, as they are also valid topics.
-        exclusions = nx.all_neighbors(self.graph, answer)
+        end_node = self.graph.get_node(name=relationship.end_node)
+        exclusions = []
+        if end_node:
+            exclusions = [x.name for x in self.graph.connected_nodes(end_node)]
 
-        # A similarity matrix is created using the relationships in the graph to find nodes that form plausible distractors.
-        similarities = nx.simrank_similarity(self.graph, source=answer)
+        # A similarity matrix is created using the nearby relationships in the graph to the answer node to find plausible distractors.
+        similarities = list(
+            self.graph.similarity_matrix(relationship)['Node2'].unique()
+        )
         distractors = [
             x for x in similarities if x not in answers and x not in exclusions
         ]
@@ -53,14 +58,24 @@ class MCQGenerator:
         Returns:
             Dict[str, Union[str, List[str]]]:
         """
-        topic, answer = random.choice(self.edges)
-        answers, distractors = self.__collect_nodes(answer=answer, topic=topic)
+        relationship = self.graph.random_relationship(seed=self.seed)
+        answer = relationship.end_node
+        answers, distractors = self.__collect_nodes(relationship)
 
         # create a fake blended word
         fwg = FakeWordGenerator(pool=answers + distractors)
         fakes = fwg.generate(filter_list=[answer] + distractors, limit=1)
 
         # shuffle the answer, distractors and fakes
-        choices = [answer] + random.sample(distractors, 2) + fakes
+        random.seed(self.seed)
+        distractors = (
+            distractors
+            if len(distractors) < 2
+            else random.sample(distractors, 2)
+        )
+        choices = [answer] + distractors + fakes
+        random.seed(self.seed)
         random.shuffle(choices)
-        return MCQ(**{'topic': topic, 'answer': answer, 'choices': choices})
+        return MCQ(
+            answer=answer, topic=relationship.start_node, choices=choices
+        )

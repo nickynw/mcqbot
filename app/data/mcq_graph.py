@@ -1,8 +1,9 @@
 """Object for acessing neo4j graph database"""
-from typing import List, Union
+from typing import List, Optional, Union
 
 from app.models import MCQNode, MCQRelationship
 from app.utils.log_util import create_logger
+from pandas import DataFrame
 
 logger = create_logger(__name__)
 
@@ -43,7 +44,7 @@ class MCQGraph:
             ValueError: if a relationship fail to be created.
         """
 
-    def has_name(self, name: str) -> Union[MCQNode, None]:
+    def get_node(self, name: str) -> Union[MCQNode, None]:
         """
         Checks the database contains a node with the given name.
 
@@ -64,5 +65,51 @@ class MCQGraph:
 
         Returns:
             bool: bool representation of found relationship in database.
+        """
+        raise NotImplementedError()
+
+    def random_relationship(
+        self, seed: Optional[int] = None
+    ) -> MCQRelationship:
+        """
+        Randomly choose and return a relationship
+
+        Returns:
+            MCQRelationship: randomly chosen relationship
+        """
+        raise NotImplementedError()
+
+    def related_nodes(self, relationship: MCQRelationship) -> List[MCQNode]:
+        """
+        Based on a given relationship, provide all related nodes with the same relationship to the start node
+
+        Args:
+            relationship (MCQRelationship): input relationship
+
+        Returns:
+            List[MCQNode]: List of related nodes
+        """
+        raise NotImplementedError()
+
+    def connected_nodes(self, node: MCQNode) -> List[MCQNode]:
+        """
+        Provides all nodes connected to the given node
+
+        Args:
+            node (MCQNode): input node
+
+        Returns:
+            List[MCQNode]: list of all connected nodes
+        """
+        raise NotImplementedError()
+
+    def similarity_matrix(self, relationship: MCQRelationship) -> DataFrame:
+        """_summary_
+
+        Args:
+            relationship (MCQRelationship): _description_
+
+        Returns:
+            pd.DataFrame: Dataframe containing similarity comparisons
         """
         raise NotImplementedError()

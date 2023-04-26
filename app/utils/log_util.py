@@ -31,7 +31,7 @@ def create_logger(name: str) -> Logger:
     return logger
 
 
-def log_query(query: str, **params: Dict[str, Any]) -> str:
+def log_query(logger: Logger, query: str, **params: Dict[str, Any]):
     """
     Builds a query string from provided parameters for use in logging.
     E.g. Cypher queries run in sessions.
@@ -42,7 +42,6 @@ def log_query(query: str, **params: Dict[str, Any]) -> str:
     Returns:
         str: a modified string using input params
     """
-
     for arg_name, arg_value in params.items():
         query = query.replace(f'${arg_name}', str(arg_value))
-    return query
+    logger.debug(query)
