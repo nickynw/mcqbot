@@ -5,7 +5,7 @@
 
 - [ ] Bug fix
 - [ ] New Feature
-- [ ] Feature/Test Improvement
+- [ ] Refactor/Improvement
 
 ## Before this pull request is approved, please check if you have done the following.
 
