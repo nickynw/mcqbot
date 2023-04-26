@@ -56,3 +56,6 @@ More solution architecture to come, I'm thinking python API / Front-end / Graph 
 ### Commands
 
 A new section to contain a guide on how to use this project.
+
+* #### git clone https://github.com/nickynw/mcqbot.git
+* #### pip install poetry==1.4.2
