@@ -31,7 +31,7 @@ jobs:
         python -m venv venv
         source venv/bin/activate
         pip install poetry==1.4.2
-        poetry install -v --with "code_audit"
+        poetry install --dev -v
 
     - name: Assess imports with isort
       if: always()
@@ -125,7 +125,7 @@ jobs:
           echo "NEO4J_URI=${NEO4J_URI}" >> .env
 
       - name: Start Neo4j service
-        run: docker-compose -f docker-compose.dev.yml up --detach graph
+        run: docker-compose -f docker-compose.dev.yml up --detach neo4j
 
       - name: Restore venv directory from cache
         uses: actions/cache@v2
