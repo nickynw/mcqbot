@@ -8,6 +8,10 @@ MCQBOT is a simple practical project that I developed to demonstrate my proficie
 
 As the project develops I will be ensuring a modular design. This means that the different technologies that make up the stack, such as front-end, the api, and databases logic will be seperate and independently tested. Modular and reusable pydantic models are also used.
 
+### Dockerisation
+
+Dockerfiles are used in this project. Initially a docker file was created to spin up an environment to run all tests for the entire app, however for now these are run in the github action/workflow environment. A docker compose file is now used to spin up and run a Neo4J graph database service to be able to run any tests that require Neo4j. This can also be run locally as well.
+
 ### Object Orientated Programming
 
 Individual modules will be composed of objects where possible to encapsulate the behaviour of different submodules and classes and objects as required.
@@ -27,7 +31,7 @@ Code will be fully documented, commented where necessary, and all python languag
 Every time a push is made to any branch, a number of checks run by various python packages listed below will be automatically run in a github action workflow.  The push will fail if there are any further changes or improvements suggested by these packages. This is a stringent measure to ensure that the only way code can make it into the project is if the code has been correctly formatted and reviewed locally.
 
 * #### mypy
-    A static type checker for Python that helps catch errors and bugs in code by verifying type annotations and detecting type-related issues at compile time.
+    A static type checker for Python that helps catch errors and bugs in code by verifying type annotations and detecting type-related issues at compile time. (Uses the mypy.ini file for configuration)
 
 * #### isort
     A utility that automatically sorts imports in code to make it more readable and consistent.
@@ -36,7 +40,7 @@ Every time a push is made to any branch, a number of checks run by various pytho
     A formatter that enforces PEP8 conventions, improving code readability and maintainability.
 
 * #### pylint
-    A static code analysis tool for Python that checks for programming errors, enforces coding standards, and provides suggestions for improving code quality and maintainability.
+    A static code analysis tool for Python that checks for programming errors, enforces coding standards, and provides suggestions for improving code quality and maintainability. (Uses the .pylintrc file for configuration)
 
 
 ### Problem Solving and Algorithm Design
@@ -45,5 +49,8 @@ One of the problems I have been looking at is how to produce plausible fake word
 
 ### Data and Solution Architecture
 
-At the moment there is a graph object used to represent the data, hopefully I will update this to have a graph database involved as well as another database to store information on test results. A lot more to come here as the project progresses.
-I'm thinking python API / Front-end / Graph Database / SQL Database at the moment.
+At the moment there are two options for data storage.
+NX (Networkx) - A variable is used to store the graph database as an object locally (Should not be used on large datasets).
+Neo4j - A graph database
+These are connected to a Fast API Application.
+More solution architecture to come, I'm thinking python API / Front-end / Graph Database / SQL Database at the moment.
