@@ -31,7 +31,7 @@ jobs:
         python -m venv venv
         source venv/bin/activate
         pip install poetry==1.4.2
-        poetry install --dev -v
+        poetry install -v
 
     - name: Assess imports with isort
       if: always()
