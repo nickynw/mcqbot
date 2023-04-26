@@ -42,7 +42,7 @@ class MCQGenerator:
         if end_node:
             exclusions = [x.name for x in self.graph.connected_nodes(end_node)]
 
-        # A similarity matrix is created using the relationships in the graph to find nodes that form plausible distractors.
+        # A similarity matrix is created using the nearby relationships in the graph to the answer node to find plausible distractors.
         similarities = list(
             self.graph.similarity_matrix(relationship)['Node2'].unique()
         )
