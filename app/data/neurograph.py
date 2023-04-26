@@ -2,10 +2,8 @@
 from typing import Dict, List
 
 import networkx as nx
-from app.models import MCQNode, MCQRelationship
-
 from app.data.nx_graph import NXGraph
-
+from app.models import MCQNode, MCQRelationship
 
 data: Dict[str, List[str]] = {
     'Neurotransmitter': [
@@ -50,7 +48,7 @@ def create_graph() -> nx.DiGraph:
         nx.DiGraph: a directed graph containing nodes representing units of information
     """
     graph = NXGraph()
-    nodes = [MCQNode(**{'name': key}) for key in data.keys()]
+    nodes = [MCQNode(**{'name': key}) for key in data]
     relationships = []
     for key, value in data.items():
         for item in value:

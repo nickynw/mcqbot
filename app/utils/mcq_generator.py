@@ -3,9 +3,9 @@
 import random
 from typing import List, Optional, Tuple
 
+from app.data.mcq_graph import MCQGraph
 from app.models import MCQ, MCQRelationship
 from app.utils.fake_word_generator import FakeWordGenerator
-from app.data.mcq_graph import MCQGraph
 
 
 class MCQGenerator:
@@ -37,12 +37,10 @@ class MCQGenerator:
         answers = [x.name for x in self.graph.related_nodes(relationship)]
 
         # Exclusions are made up of all nodes that connect to the original answer node, as they are also valid topics.
-        exclusions = [
-            x.name
-            for x in self.graph.connected_nodes(
-                self.graph.get_node(name=relationship.end_node)
-            )
-        ]
+        end_node = self.graph.get_node(name=relationship.end_node)
+        exclusions = []
+        if end_node:
+            exclusions = [x.name for x in self.graph.connected_nodes(end_node)]
 
         # A similarity matrix is created using the relationships in the graph to find nodes that form plausible distractors.
         similarities = list(
@@ -79,9 +77,5 @@ class MCQGenerator:
         random.seed(self.seed)
         random.shuffle(choices)
         return MCQ(
-            **{
-                'topic': relationship.start_node,
-                'answer': answer,
-                'choices': choices,
-            }
+            answer=answer, topic=relationship.start_node, choices=choices
         )
