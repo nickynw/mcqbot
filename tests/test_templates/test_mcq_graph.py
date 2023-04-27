@@ -1,4 +1,4 @@
-"""Test the MCQGraph class object interface with Neo4J Database, are operations working as expected"""
+"""A template to test that all of the MCQGraph class object interface operations working as expected"""
 import logging
 
 import pytest

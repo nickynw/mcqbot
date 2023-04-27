@@ -12,11 +12,9 @@ jobs:
         python-version: ["3.9"]
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -33,7 +31,7 @@ jobs:
         python -m venv venv
         source venv/bin/activate
         pip install poetry==1.4.2
-        poetry install -v --with "code_audit"
+        poetry install -v
 
     - name: Assess imports with isort
       if: always()
@@ -127,7 +125,7 @@ jobs:
           echo "NEO4J_URI=${NEO4J_URI}" >> .env
 
       - name: Start Neo4j service
-        run: docker-compose -f docker-compose.dev.yml up --detach graph
+        run: docker-compose -f docker/docker-compose.dev.yml --env-file .env up -d neo4j
 
       - name: Restore venv directory from cache
         uses: actions/cache@v2
@@ -149,7 +147,6 @@ jobs:
 
   clean-cache:
     needs: [test-app, test-nx, test-neo4j]
-    if: ${{ test-app.outcome == 'success' && test-nx.outcome == 'success' && test-neo4j.outcome == 'success'}}
     runs-on: ubuntu-latest
     steps:
       - name: Check out code

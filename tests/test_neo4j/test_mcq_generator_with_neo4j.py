@@ -1,4 +1,4 @@
-"""Test the Fake Word Generator Class"""
+"""Test the MCQGenerator Class using a Neo4J Graph Database"""
 import os
 
 import pytest
