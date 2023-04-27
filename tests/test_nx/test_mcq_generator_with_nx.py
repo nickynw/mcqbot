@@ -1,4 +1,4 @@
-"""Test the Fake Word Generator Class"""
+"""Test the MCQ Generator Class with an Networkx Graph Database"""
 import pytest
 from app.data.nx_graph import NXGraph
 from app.models import MCQ
