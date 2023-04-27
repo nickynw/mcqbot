@@ -11,5 +11,4 @@ scratch
 poetry.lock
 .vscode
 neo4j
-commands
 .env
