@@ -18,7 +18,10 @@ def log(func: Callable[..., Any]):
     Args:
         func (Callable[..., Any]): session run function
     """
-    def log_wrapper(session: Session, query: str, **kwargs: Dict[str, Any])  -> Callable:
+
+    def log_wrapper(
+        session: Session, query: str, **kwargs: Dict[str, Any]
+    ) -> Callable:
         """
         Logs message at debug level of the query with params and variables replaced as it would be sent to the driver.
 
@@ -31,6 +34,7 @@ def log(func: Callable[..., Any]):
             output = output.replace(f'${arg_name}', "'" + str(arg_value) + "'")
         logger.debug(output)
         return func(session, query, **kwargs)
+
     return log_wrapper
 
 
@@ -174,7 +178,7 @@ class Neo4JGraph(MCQGraph):
             if num_rels < 1:
                 raise ValueError('Empty Database.')
             random.seed(seed)
-            random_index = random.randint(0, num_rels)
+            random_index = random.randint(1, num_rels)
             query = """
                 MATCH (answer_node)-[relationship]->(topic_node)
                 RETURN answer_node, relationship, topic_node

@@ -37,21 +37,23 @@ class MCQGenerator:
         answer_nodes = [x.name for x in self.graph.related_nodes(relationship)]
         answer_node = self.graph.get_node(name=relationship.answer_node)
         if answer_node is None:
-            raise ValueError('Unable to find randomly selected answer node in database.')
-        
+            raise ValueError(
+                'Unable to find randomly selected answer node in database.'
+            )
+
         # Nodes to exclude from distractors include any connected nodes to the chosen answer node
-        exclusions = [
-            x.name for x in self.graph.connected_nodes(answer_node)
-        ]
+        exclusions = [x.name for x in self.graph.connected_nodes(answer_node)]
 
         # Distractors are taken from nodes with high similarity near to the chosen answer node
         similar_nodes = sorted(self.graph.similarity_matrix(answer_node))
 
         distractors = [
-                x
-                for x in similar_nodes
-                if x not in answer_nodes and x not in exclusions
-                and x != relationship.answer_node and x!= relationship.topic_node
+            x
+            for x in similar_nodes
+            if x not in answer_nodes
+            and x not in exclusions
+            and x != relationship.answer_node
+            and x != relationship.topic_node
         ]
         return answer_nodes, distractors
 

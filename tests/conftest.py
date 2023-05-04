@@ -1,87 +1,89 @@
-# pylint: disable=duplicate-code
 """Provides fixtures shared between different test files."""
-from typing import Dict, List
+from typing import Dict, Generator, List
 import pytest
 from app.data.mcq_graph import MCQGraph
 from app.models import MCQNode, MCQRelationship
+from tests.test_utils import fill_graph
 
-
-def fill_graph(graph: MCQGraph, data: Dict[str, List[str]]) -> MCQGraph:
+@pytest.fixture(name='complex_graph')
+def complex_graph_fixture(
+    graph: MCQGraph, test_data: List[Dict[str, str]]
+) -> Generator[MCQGraph, None, None]:
     """
-    Given a graph, fills it with the provided data.
+    Populates the database with sample nodes.
 
     Args:
-        graph (_type_): input graph
-        data (_type_): input data
+        graph (Generator[MCQGraph]): An empty databases and MCQGraph driver.
 
-    Returns:
-        _type_: _description_
+    Yields:
+        Generator[MCQGraph]: A database populated with sample nodes.
     """
-    nodes = [MCQNode(**{'name': key}) for key in data]
-    relationships = []
-    for key, value in data.items():
-        if isinstance(value, list):
-            for item in value:
-                relationships.append(
-                    MCQRelationship(
-                        **{
-                            'answer_node': key,
-                            'topic_node': item,
-                            'type': 'includes',
-                        }
-                    )
-                )
-                relationships.append(
-                    MCQRelationship(
-                        **{
-                            'topic_node': key,
-                            'answer_node': item,
-                            'type': 'belongs_to',
-                        }
-                    )
-                )
-    graph.delete_all()
-    graph.create_nodes(nodes=nodes)
-    graph.create_relationships(relationships=relationships)
-    return graph
+    yield fill_graph(graph, test_data)
 
 
-@pytest.fixture(scope='session', name='test_graph')
-def test_graph(request):
+@pytest.fixture(name='test_data')
+def test_data():
     """Fixture for creating and populating an MCQ Graph"""
     data = {
-        'Hello': [],
-        'Hey': [],
-        'Good Morning': [],
-        'Hola': [],
-        'Greetings': ['Hello', 'Hey', 'Good Morning', 'Hola'],
-        'Goodbye': [],
-        'Adios': [],
-        'Ciao': [],
-        'See you later': [],
-        'English': [
-            'Hello',
-            'Hey',
-            'Good Morning',
-            'Goodbye',
-            'See you later',
-            'Greetings',
-            'Farewells',
-        ],
-        'Words': [
-            'Hello',
-            'Hey',
-            'Good Morning',
-            'Goodbye',
-            'See you later',
-            'Greetings',
-            'Farewells',
-            'Adios',
-            'Ciao',
-            'Hola',
-        ],
+        'Blah': [],
+        'Hello':[],
+        'Hey':[],
+        'Good Morning':[],
+        'Hola':[],
+        'Greetings':['Hello','Hey','Good Morning', 'Hola'],
+        'Goodbye':[],
+        'Adios':[],
+        'Ciao':[],
+        'Farewells':['Adios', 'Ciao', 'Goodbye', 'See you later'],
+        'See you later':[],
+        'English':['Hello','Hey','Good Morning','Goodbye','See you later', 'Greetings', 'Farewells'],
+        'Words':['Hello','Hey','Good Morning','Goodbye','See you later', 'Greetings', 'Farewells', 'Adios', 'Ciao', 'Hola', 'English', 'Blah']
     }
-    graph = fill_graph(request.param, data)
+    return data
+
+
+@pytest.fixture(name='simple_properties')
+def simple_properties_fixture() -> List[Dict[str, str]]:
+    return [{'name': 'Sample Node 1'}, {'name': 'Sample Node 2'}]
+
+
+@pytest.fixture(name='simple_graph')
+def simple_graph_fixture(
+    graph: MCQGraph, simple_properties: List[Dict[str, str]]
+) -> Generator[MCQGraph, None, None]:
+    """
+    Populates the database with sample nodes.
+
+    Args:
+        graph (Generator[MCQGraph]): An empty databases and MCQGraph driver.
+
+    Yields:
+        Generator[MCQGraph]: A database populated with sample nodes.
+    """
+
+    graph.create_nodes([MCQNode(**node) for node in simple_properties])
     yield graph
-    graph.delete_all()
-    graph.close()
+
+
+@pytest.fixture(name='simple_relationships_graph')
+def simple_relationships_graph_fixture(
+    simple_graph: MCQGraph,
+) -> Generator[MCQGraph, None, None]:
+    relationships = [
+        MCQRelationship(
+            **{
+                'answer_node': 'Sample Node 1',
+                'type': 'is_linked_to',
+                'topic_node': 'Sample Node 2',
+            }
+        ),
+        MCQRelationship(
+            **{
+                'answer_node': 'Sample Node 2',
+                'type': 'is_linked_to',
+                'topic_node': 'Sample Node 1',
+            }
+        ),
+    ]
+    simple_graph.create_relationships(relationships)
+    yield simple_graph
