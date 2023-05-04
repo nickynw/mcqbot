@@ -2,7 +2,7 @@
 
 import itertools
 import random
-from typing import Generator, List, Tuple, Union
+from typing import Generator, List, Optional, Tuple, Union
 
 import Levenshtein
 import pyphen
@@ -17,7 +17,8 @@ class FakeWordGenerator:
     dic_US = pyphen.Pyphen(lang='en_US')
     dic_GB = pyphen.Pyphen(lang='en_GB')
 
-    def __init__(self, pool: List[str]):
+    def __init__(self, pool: List[str], seed: Optional[int] = None):
+        self.seed = seed
         self.pool = pool
         self.second_parts = [
             x[1]
@@ -120,7 +121,7 @@ class FakeWordGenerator:
         Yields:
             str: a fake word
         """
-
+        random.seed(self.seed)
         random.shuffle(self.pool)
 
         for fake_word, word in itertools.product(potential_fakes, self.pool):
@@ -151,13 +152,17 @@ class FakeWordGenerator:
 
         if filter_list:
             subpool = [x for x in self.pool if x not in filter_list]
+            random.seed(self.seed)
             base_words = random.sample(subpool, min(len(subpool), limit))
         else:
+            random.seed(self.seed)
             base_words = random.sample(self.pool, min(len(self.pool), limit))
 
         for word in base_words:
+            random.seed(self.seed)
             random.shuffle(self.second_parts)
             random_word_pairs = self.__split_pairs(word)
+            random.seed(self.seed)
             first_part = random.choice(random_word_pairs)[0]
             exclusions = [x[1] for x in random_word_pairs]
 

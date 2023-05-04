@@ -1,7 +1,6 @@
 """A logger to use throughout the project"""
 import logging
 from logging import Logger
-from typing import Any, Dict
 
 
 def create_logger(name: str) -> Logger:
@@ -29,19 +28,3 @@ def create_logger(name: str) -> Logger:
     logger.addHandler(chandler)
 
     return logger
-
-
-def log_query(logger: Logger, query: str, **params: Dict[str, Any]):
-    """
-    Builds a query string from provided parameters for use in logging.
-    E.g. Cypher queries run in sessions.
-
-    Args:
-        query (str): the input string to modify
-
-    Returns:
-        str: a modified string using input params
-    """
-    for arg_name, arg_value in params.items():
-        query = query.replace(f'${arg_name}', str(arg_value))
-    logger.debug(query)

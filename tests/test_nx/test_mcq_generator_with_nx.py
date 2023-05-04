@@ -5,14 +5,14 @@ from app.models import MCQ
 from app.utils.mcq_generator import MCQGenerator
 
 
-@pytest.mark.parametrize('mcq_graph', [NXGraph()], indirect=True)
-def test_mcq_generator(mcq_graph):
+@pytest.mark.parametrize('test_graph', [NXGraph()], indirect=True)
+def test_mcq_generator_with_nx(test_graph):
     """A test to show that the MCQ generator is working correctly."""
 
-    mcq = MCQGenerator(mcq_graph, seed=2)
+    mcq = MCQGenerator(test_graph, seed=2)
     output = mcq.generate()
     assert output == MCQ(
-        answer='Glycine',
-        topic='Neurotransmitter',
-        choices=['GABA', 'Serotonin', 'Glycine'],
+        answer='Greetings',
+        topic='Hey',
+        choices=['Adios', 'See you later', 'Helyou later', 'Greetings'],
     )

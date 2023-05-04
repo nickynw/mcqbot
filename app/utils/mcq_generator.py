@@ -34,22 +34,26 @@ class MCQGenerator:
             Tuple[List[str], List[str]]: A list of all possible answers to a question and plausible distractors
         """
         # Answers are all other nodes that connect to this given topic in the same direction.
-        answers = [x.name for x in self.graph.related_nodes(relationship)]
-
-        # Exclusions are made up of all nodes that connect to the original answer node, as they are also valid topics.
-        end_node = self.graph.get_node(name=relationship.end_node)
-        exclusions = []
-        if end_node:
-            exclusions = [x.name for x in self.graph.connected_nodes(end_node)]
-
-        # A similarity matrix is created using the nearby relationships in the graph to the answer node to find plausible distractors.
-        similarities = list(
-            self.graph.similarity_matrix(relationship)['Node2'].unique()
-        )
-        distractors = [
-            x for x in similarities if x not in answers and x not in exclusions
+        answer_nodes = [x.name for x in self.graph.related_nodes(relationship)]
+        answer_node = self.graph.get_node(name=relationship.answer_node)
+        if answer_node is None:
+            raise ValueError('Unable to find randomly selected answer node in database.')
+        
+        # Nodes to exclude from distractors include any connected nodes to the chosen answer node
+        exclusions = [
+            x.name for x in self.graph.connected_nodes(answer_node)
         ]
-        return answers, distractors
+
+        # Distractors are taken from nodes with high similarity near to the chosen answer node
+        similar_nodes = sorted(self.graph.similarity_matrix(answer_node))
+
+        distractors = [
+                x
+                for x in similar_nodes
+                if x not in answer_nodes and x not in exclusions
+                and x != relationship.answer_node and x!= relationship.topic_node
+        ]
+        return answer_nodes, distractors
 
     def generate(self) -> MCQ:
         """
@@ -59,11 +63,11 @@ class MCQGenerator:
             Dict[str, Union[str, List[str]]]:
         """
         relationship = self.graph.random_relationship(seed=self.seed)
-        answer = relationship.end_node
+        answer = relationship.topic_node
         answers, distractors = self.__collect_nodes(relationship)
 
         # create a fake blended word
-        fwg = FakeWordGenerator(pool=answers + distractors)
+        fwg = FakeWordGenerator(pool=answers + distractors, seed=self.seed)
         fakes = fwg.generate(filter_list=[answer] + distractors, limit=1)
 
         # shuffle the answer, distractors and fakes
@@ -73,9 +77,10 @@ class MCQGenerator:
             if len(distractors) < 2
             else random.sample(distractors, 2)
         )
+
         choices = [answer] + distractors + fakes
         random.seed(self.seed)
         random.shuffle(choices)
         return MCQ(
-            answer=answer, topic=relationship.start_node, choices=choices
+            answer=answer, topic=relationship.answer_node, choices=choices
         )

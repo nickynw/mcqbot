@@ -1,15 +1,52 @@
 """Object for acessing neo4j graph database"""
 import random
 from collections import Counter
-from typing import List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
-import pandas as pd
 from app.data.mcq_graph import MCQGraph
 from app.models import MCQNode, MCQRelationship
-from app.utils.log_util import create_logger, log_query
-from neo4j import GraphDatabase
+from app.utils.log_util import create_logger
+from neo4j import GraphDatabase, Session, Result
 
 logger = create_logger(__name__)
+
+
+def log(func: Callable[..., Any]):
+    """
+    A wrapper that logs the query sent to Neo4j via the driver as logging is not included in the free version.
+
+    Args:
+        func (Callable[..., Any]): session run function
+    """
+    def log_wrapper(session: Session, query: str, **kwargs: Dict[str, Any])  -> Callable:
+        """
+        Logs message at debug level of the query with params and variables replaced as it would be sent to the driver.
+
+        Args:
+            session (Session): session to which the query is sent
+            query (str): original query string
+        """
+        output = query[:]
+        for arg_name, arg_value in kwargs.items():
+            output = output.replace(f'${arg_name}', "'" + str(arg_value) + "'")
+        logger.debug(output)
+        return func(session, query, **kwargs)
+    return log_wrapper
+
+
+@log
+def run(session: Session, query: str, **params: Dict[str, Any]) -> Result:
+    """
+    Run a query through the python driver neo4j session
+
+    Args:
+        session (Session): Session instance
+        query (str): query string
+
+    Returns:
+        Result: the result of the cypher query run via the driver in the neo4j session
+    """
+    return session.run(query, params)
 
 
 class Neo4JGraph(MCQGraph):
@@ -21,12 +58,11 @@ class Neo4JGraph(MCQGraph):
         super()
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
         with self.driver.session() as session:
-            session.run(
-                'CREATE CONSTRAINT IF NOT EXISTS FOR (e:Entity) REQUIRE e.name IS UNIQUE;'
+            run(
+                session,
+                query='CREATE CONSTRAINT IF NOT EXISTS FOR (e:Entity) REQUIRE e.name IS UNIQUE;',
             )
-        logger.info(
-            'New MCQGraph Object created - connection opened. Added constraint.'
-        )
+            logger.info('New MCQGraph Object created.')
 
     def close(self):
         self.driver.close()
@@ -38,8 +74,7 @@ class Neo4JGraph(MCQGraph):
                 MATCH (node)
                 DETACH DELETE node;
             """
-            log_query(logger, query)
-            session.run(query)
+            run(session=session, query=query)
             logger.info('All nodes removed from graph database.')
 
     def create_nodes(self, nodes: List[MCQNode]):
@@ -74,39 +109,31 @@ class Neo4JGraph(MCQGraph):
         query = 'CREATE (:Entity $props);'
         with self.driver.session() as session:
             for node in nodes:
-                log_query(logger, query, props=node.dict())
                 session.run(query, props=node.dict())
             logger.info('Created %s nodes.', len(nodes))
 
     def create_relationships(self, relationships: List[MCQRelationship]):
         with self.driver.session() as session:
-            try:
-                for relationship in relationships:
-                    query = (
-                        """
-                        MATCH (start:Entity {name: $start_node})
-                        MATCH (end:Entity {name: $end_node})
-                        CREATE (start)-[relationship:%s]->(end)
-                        return relationship;
+            for relationship in relationships:
+                query = (
                     """
-                        % relationship.type
+                    MATCH (answer_node:Entity {name: $answer_node})
+                    MATCH (topic_node:Entity {name: $topic_node})
+                    CREATE (answer_node)-[relationship:%s]->(topic_node)
+                    return relationship;
+                """
+                    % relationship.type
+                )
+                # log_query(logger, query, **relationship.dict())
+                success = bool(
+                    session.run(query, **relationship.dict()).single()
+                )
+                if not success:
+                    logger.warning(
+                        'Failed to create relationship: %s',
+                        str(relationship),
+                        extra={'relationship': relationships},
                     )
-                    log_query(logger, query, **relationship.dict())
-                    success = bool(
-                        session.run(query, **relationship.dict()).single()
-                    )
-                    if not success:
-                        logger.warning(
-                            'Failed to create relationship: %s',
-                            str(relationship),
-                            extra={'relationship': relationships},
-                        )
-                        raise ValueError(
-                            'No relationships created due to failed relationships within input.'
-                        )
-            except Exception:
-                session.rollback()  # roll back the transaction if an exception occurred
-                raise
         logger.info(
             'Created %s relationships in the database.', len(relationships)
         )
@@ -117,7 +144,6 @@ class Neo4JGraph(MCQGraph):
                 MATCH (node:Entity {name: $name})
                 RETURN node;
             """
-            log_query(logger, query=query, params={'name': name})
             result = session.run(query, name=name)
             record = result.single()
             if record:
@@ -128,13 +154,12 @@ class Neo4JGraph(MCQGraph):
         with self.driver.session() as session:
             query = (
                 """
-                MATCH (start_node:Entity {name: $start_node})-[r:%s]-(end_node:Entity {name: $end_node})
+                MATCH (answer_node:Entity {name: $answer_node})-[r:%s]->(topic_node:Entity {name: $topic_node})
                 RETURN r
             """
                 % relationship.type
             )
-            log_query(logger, query, **relationship.dict())
-            result = session.run(query, **relationship.dict())
+            result = run(session, query, **relationship.dict())
             return bool(result.single())
 
     def random_relationship(
@@ -145,24 +170,22 @@ class Neo4JGraph(MCQGraph):
             MATCH ()-[relationship]->()
             RETURN COUNT(relationship) AS num_rels
             """
-            log_query(logger, query=query_count)
             num_rels = session.run(query_count).single()['num_rels']
             if num_rels < 1:
                 raise ValueError('Empty Database.')
             random.seed(seed)
             random_index = random.randint(0, num_rels)
             query = """
-                MATCH (start_node)-[relationship]->(end_node)
-                RETURN start_node, relationship, end_node
-                ORDER BY start_node.name
+                MATCH (answer_node)-[relationship]->(topic_node)
+                RETURN answer_node, relationship, topic_node
+                ORDER BY answer_node.name
                 SKIP $n - 1
                 LIMIT 1
             """
-            log_query(logger, query=query, params={'n': random_index})
-            result = session.run(query, n=random_index).single()
+            result = run(session, query, n=random_index).single()
             relationship = MCQRelationship(
-                start_node=result['start_node']['name'],
-                end_node=result['end_node']['name'],
+                answer_node=result['answer_node']['name'],
+                topic_node=result['topic_node']['name'],
                 type=result['relationship'].type,
             )
             return relationship
@@ -170,24 +193,17 @@ class Neo4JGraph(MCQGraph):
     def related_nodes(self, relationship: MCQRelationship) -> List[MCQNode]:
         with self.driver.session() as session:
             query = """
-            MATCH (start_node:Entity {name: $end_node})-[r:%s]-(b:Entity {name: $start_node})-[r2:%s]-(related_node:Entity)
+            MATCH (answer_node:Entity {name: $answer_node})-[r:%s]->(b:Entity {name: $topic_node})<-[r2:%s]-(related_node:Entity)
             RETURN related_node
             """ % (
                 relationship.type,
                 relationship.type,
             )
-            log_query(
-                logger,
+            result = run(
+                session,
                 query,
-                params={
-                    'end_node': relationship.end_node,
-                    'start_node': relationship.start_node,
-                },
-            )
-            result = session.run(
-                query,
-                end_node=relationship.end_node,
-                start_node=relationship.start_node,
+                topic_node=relationship.topic_node,
+                answer_node=relationship.answer_node,
             )
             nodes = [
                 MCQNode(**dict(record['related_node'].items()))
@@ -198,20 +214,18 @@ class Neo4JGraph(MCQGraph):
     def connected_nodes(self, node: MCQNode) -> List[MCQNode]:
         with self.driver.session() as session:
             query = """
-                MATCH (start_node:Entity {name: $node})--(end_node:Entity)
-                RETURN end_node
+                MATCH (node:Entity {name: $node})--(connected_node:Entity)
+                RETURN COLLECT(DISTINCT connected_node) AS connected_nodes
             """
-            log_query(logger, query, params={'node': node.name})
-            result = session.run(query, node=node.name)
+            result = run(session, query, node=node.name)
             nodes = [
-                MCQNode(**dict(record['end_node'].items()))
-                for record in result
+                MCQNode(**dict(x.items()))
+                for x in result.single()['connected_nodes']
             ]
             return nodes
 
-    def similarity_matrix(self, relationship: MCQRelationship) -> pd.DataFrame:
+    def similarity_matrix(self, node: MCQNode) -> Dict[str, float]:
         graph_projection = 'graph_projection'
-        end_node = relationship.end_node
         with self.driver.session() as session:
             query_drop_graph = """
                 WITH $graph_projection AS graphName
@@ -221,45 +235,34 @@ class Neo4JGraph(MCQGraph):
                 CALL gds.graph.drop(graphName) YIELD graphName AS droppedGraphName
                 RETURN droppedGraphName
             """
-            log_query(
-                logger,
+            run(
+                session=session,
                 query=query_drop_graph,
-                params={'graph_projection': graph_projection},
+                graph_projection=graph_projection,
             )
-            session.run(query_drop_graph, graph_projection=graph_projection)
             query_build_graph = """
-                MATCH (a:Entity {name:$end_node})--(target:Entity)-[*1..2]-(source:Entity)
-                WITH gds.alpha.graph.project($graph_projection, source, target) AS g
-                RETURN g.graphName AS graph, g.nodeCount AS nodes, g.relationshipCount AS rels
+                CALL gds.graph.project(
+                    $graph_projection,
+                    '*',
+                    '*'
+                );
             """
-            result = session.run(
+            run(
+                session,
                 query_build_graph,
                 graph_projection=graph_projection,
-                end_node=end_node,
             )
-            log_query(
-                logger,
-                query=query_build_graph,
-                params={
-                    'graph_projection': graph_projection,
-                    'end_node': end_node,
-                },
-            )
-
             query_similarity = """
-                CALL gds.nodeSimilarity.stream($graph_projection)
+                MATCH (n:Entity) where n.name = $node
+                CALL gds.alpha.nodeSimilarity.filtered.stream($graph_projection, {sourceNodeFilter: n, topK: 20})
                 YIELD node1, node2, similarity
-                RETURN gds.util.asNode(node1).name AS Node1, gds.util.asNode(node2).name AS Node2, similarity
-                ORDER BY similarity DESCENDING, Node1, Node2
+                RETURN gds.util.asNode(node2).name AS key, similarity AS value
+                ORDER BY similarity DESCENDING, key
             """
-            log_query(
-                logger,
-                query=query_similarity,
-                params={'graph_projection': graph_projection},
+            result = run(
+                session,
+                query_similarity,
+                graph_projection=graph_projection,
+                node=node.name,
             )
-
-            result = session.run(
-                query_similarity, graph_projection=graph_projection
-            )
-
-            return pd.DataFrame([record.data() for record in result])
+            return {x['key']: x['value'] for x in result}

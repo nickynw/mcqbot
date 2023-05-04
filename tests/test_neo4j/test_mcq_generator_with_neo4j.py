@@ -13,16 +13,16 @@ neo4j_password = os.getenv('NEO4J_PASSWORD')
 
 
 @pytest.mark.parametrize(
-    'mcq_graph',
+    'test_graph',
     [Neo4JGraph(neo4j_uri, 'neo4j', neo4j_password)],
     indirect=True,
 )
-def test_mcq_generator(mcq_graph):
+def test_mcq_generator_with_neo4j(test_graph):
     """A test to show that the MCQ generator is working correctly."""
-    mcq = MCQGenerator(mcq_graph, seed=3)
+    mcq = MCQGenerator(test_graph, seed=3)
     output = mcq.generate()
     assert output == MCQ(
-        answer='GABA',
-        topic='GABA Receptor',
-        choices=['Muscimine', 'GABA', 'Vitamin C', 'Glutamate'],
+        answer='English',
+        topic='Greetings',
+        choices=['Goodyou later', 'English', 'Ciao', 'Adios'],
     )

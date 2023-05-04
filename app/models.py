@@ -34,9 +34,9 @@ class MCQNode(BaseModel):
 class MCQRelationship(BaseModel):
     """Model for Nodes in Neo4J"""
 
-    start_node: str
+    answer_node: str
     type: str
-    end_node: str
+    topic_node: str
 
     class Config:
         extra = 'forbid'

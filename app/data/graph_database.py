@@ -47,9 +47,18 @@ def new_graph() -> NXGraph:
                 relationships.append(
                     MCQRelationship(
                         **{
-                            'start_node': key,
-                            'end_node': item,
-                            'type': 'links_to',
+                            'answer_node': key,
+                            'topic_node': item,
+                            'type': 'includes',
+                        }
+                    )
+                )
+                relationships.append(
+                    MCQRelationship(
+                        **{
+                            'topic_node': key,
+                            'answer_node': item,
+                            'type': 'belongs_to',
                         }
                     )
                 )

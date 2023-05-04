@@ -57,9 +57,9 @@ class TestMCQGraph:
         """Tests whether we can create relationships and checks if they fail."""
         relationship = MCQRelationship(
             **{
-                'start_node': 'Sample Node 1',
+                'answer_node': 'Sample Node 1',
                 'type': 'is_linked_to',
-                'end_node': 'Sample Node 2',
+                'topic_node': 'Sample Node 2',
             }
         )
         assert sample_graph.has_relationship(relationship) is False
