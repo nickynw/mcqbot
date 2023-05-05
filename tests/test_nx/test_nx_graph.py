@@ -5,18 +5,15 @@ from typing import Generator
 import pytest
 from app.data.mcq_graph import MCQGraph
 from app.data.nx_graph import NXGraph
-from app.models import MCQNode
 from tests.test_templates.test_mcq_graph import TestMCQGraph
 
 logging.getLogger('neo4j.bolt').setLevel(logging.DEBUG)
-
-sample_properties = [{'name': 'Sample Node 1'}, {'name': 'Sample Node 2'}]
 
 
 @pytest.fixture(name='graph')
 def graph_fixture() -> Generator[MCQGraph, None, None]:
     """
-    Creates fixtures MCQGraph object to work with
+    Creates a networkx graph fixture for use in testing
 
     Yields:
         Generator[MCQGraph]: MCQGraph object that connects via driver to database.
@@ -26,27 +23,12 @@ def graph_fixture() -> Generator[MCQGraph, None, None]:
     graph.delete_all()
 
 
-@pytest.fixture(name='sample_graph')
-def sample_graph_fixture(graph: MCQGraph) -> Generator[MCQGraph, None, None]:
-    """
-    Populates the database with sample nodes.
-
-    Args:
-        graph (Generator[MCQGraph]): An empty databases and MCQGraph driver.
-
-    Yields:
-        Generator[MCQGraph]: A database populated with sample nodes.
-    """
-    graph.create_nodes([MCQNode(**node) for node in sample_properties])
-    yield graph
-
-
 @pytest.fixture(name='single_node_graph')
-def single_node_graph_fixture(
+def single_node_fixture(
     graph: NXGraph,
 ) -> Generator[MCQGraph, None, None]:
     """
-    Creates fixtures MCQGraph object to work with
+    Creates a single node within a networkx x graph without calling the driver function.
 
     Yields:
         Generator[MCQGraph]: MCQGraph object that connects via driver to database.
@@ -55,10 +37,10 @@ def single_node_graph_fixture(
     yield graph
 
 
-@pytest.mark.usefixtures('graph', 'sample_graph', 'single_node_graph')
+@pytest.mark.usefixtures('graph', 'single_node_graph', 'complex_graph')
 class TestNXGraph:
     """Test class for NXGraph"""
 
-    def test_mcq_graph(self):
+    def test_nx_graph(self):
         """Run all the tests in mcq graph template file with these fixtures"""
         TestMCQGraph()

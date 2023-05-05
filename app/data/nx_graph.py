@@ -1,10 +1,9 @@
 """Object for acessing neo4j graph database"""
 import random
 from collections import Counter
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 import networkx as nx
-import pandas as pd
 from app.data.mcq_graph import MCQGraph
 from app.models import MCQNode, MCQRelationship
 from app.utils.log_util import create_logger
@@ -60,8 +59,8 @@ class NXGraph(MCQGraph):
         for relationship in relationships:
             try:
                 self.graph.add_edge(
-                    relationship.start_node,
-                    relationship.end_node,
+                    relationship.answer_node,
+                    relationship.topic_node,
                     type=relationship.type,
                 )
             # pylint: disable=broad-except
@@ -83,8 +82,8 @@ class NXGraph(MCQGraph):
     def has_relationship(self, relationship: MCQRelationship) -> bool:
         for start_node, end_node, props in self.graph.edges(data=True):
             if (
-                start_node == relationship.start_node
-                and end_node == relationship.end_node
+                start_node == relationship.answer_node
+                and end_node == relationship.topic_node
                 and props['type'] == relationship.type
             ):
                 return True
@@ -92,48 +91,36 @@ class NXGraph(MCQGraph):
 
     def related_nodes(self, relationship: MCQRelationship) -> List[MCQNode]:
         return [
-            MCQNode(**self.graph.nodes[relationship.end_node])
-            for x in self.graph.edges
-            if x[0] == relationship.start_node
+            MCQNode(**self.graph.nodes[edge[0]])
+            for edge in self.graph.edges(data=True)
+            if edge[1] == relationship.topic_node
+            and edge[0] != relationship.answer_node
+            and edge[2]['type'] == relationship.type
         ]
 
     def connected_nodes(self, node: MCQNode) -> List[MCQNode]:
-        nodes = nx.ego_graph(self.graph, node.name, radius=1, undirected=True)
-        nodes = [MCQNode(**self.graph.nodes[x]) for x in nodes]
+        nodes = nx.ego_graph(self.graph, node.name, radius=1)
+        nodes = [
+            MCQNode(**self.graph.nodes[x]) for x in nodes if x != node.name
+        ]
         return nodes
 
     def random_relationship(
         self, seed: Optional[int] = None
     ) -> MCQRelationship:
-        if seed:
-            random.seed(seed)
+        random.seed(seed)
         edge = random.choice(list(self.graph.edges))
         edge_data = self.graph.get_edge_data(*edge)
         return MCQRelationship(
-            start_node=edge[0], end_node=edge[1], **edge_data
+            answer_node=edge[0], topic_node=edge[1], **edge_data
         )
 
-    def similarity_matrix(self, relationship: MCQRelationship) -> pd.DataFrame:
-        node = relationship.end_node
-        subgraph = nx.ego_graph(self.graph, node, radius=4, undirected=True)
-        answer_nodes = [
-            x[1] for x in subgraph.edges if x[0] == relationship.start_node
+    def similarity_matrix(self, node: MCQNode) -> Dict[str, float]:
+        subgraph = nx.ego_graph(
+            self.graph, node.name, radius=5, undirected=True
+        )
+        jaccard = list(nx.jaccard_coefficient(subgraph.to_undirected()))
+        pairs = [(x[1], x[2]) for x in jaccard if x[0] == node.name] + [
+            (x[0], x[2]) for x in jaccard if x[1] == node.name
         ]
-        output = {}
-        for answer_node in answer_nodes:
-            output[answer_node] = nx.simrank_similarity(
-                subgraph, source=answer_node
-            )
-
-        df = pd.DataFrame(output)
-        df['Node1'] = df.index
-        df = pd.melt(
-            df,
-            id_vars=['Node1'],
-            value_vars=list(df.columns),
-            var_name='Node2',
-            value_name='similarity',
-        )
-        df = df[df['Node1'] != df['Node2']]
-        df = df.sort_values('similarity', ascending=False)
-        return df
+        return {x[0]: x[1] for x in pairs}

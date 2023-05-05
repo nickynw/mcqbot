@@ -1,9 +1,8 @@
 """Object for acessing neo4j graph database"""
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from app.models import MCQNode, MCQRelationship
 from app.utils.log_util import create_logger
-from pandas import DataFrame
 
 logger = create_logger(__name__)
 
@@ -103,13 +102,13 @@ class MCQGraph:
         """
         raise NotImplementedError()
 
-    def similarity_matrix(self, relationship: MCQRelationship) -> DataFrame:
+    def similarity_matrix(self, node: MCQNode) -> Dict[str, float]:
         """_summary_
 
         Args:
-            relationship (MCQRelationship): _description_
+            node (MCQNode): input node to get similarity for
 
         Returns:
-            pd.DataFrame: Dataframe containing similarity comparisons
+            Dict[str, float]: simlarity values for each node key
         """
         raise NotImplementedError()
