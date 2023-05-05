@@ -7,7 +7,7 @@ from app.data.mcq_graph import MCQGraph
 from app.data.neo4j_graph import Neo4JGraph
 from app.models import MCQ
 from app.utils.mcq_generator import MCQGenerator
-from dotenv import load_dotenv
+from tests.test_neo4j.neo4j_connect import URI
 
 
 @pytest.fixture(name='graph')
@@ -18,13 +18,9 @@ def graph_fixture() -> Generator[MCQGraph, None, None]:
     Yields:
         Generator[MCQGraph]: MCQGraph object that connects via driver to database.
     """
-    load_dotenv()
-    graph = Neo4JGraph(
-        os.getenv('NEO4J_URI'), 'neo4j', os.getenv('NEO4J_PASSWORD')
-    )
+    graph = Neo4JGraph(URI, 'neo4j', os.getenv('NEO4J_PASSWORD'))
     yield graph
     graph.delete_all()
-    graph.close()
 
 
 @pytest.mark.usefixtures('graph', 'complex_graph')

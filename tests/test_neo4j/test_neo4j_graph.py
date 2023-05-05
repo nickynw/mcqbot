@@ -7,6 +7,7 @@ import pytest
 from app.data.mcq_graph import MCQGraph
 from app.data.neo4j_graph import Neo4JGraph
 from dotenv import load_dotenv
+from tests.test_neo4j.neo4j_connect import URI
 from tests.test_templates.test_mcq_graph import TestMCQGraph
 
 logging.getLogger('neo4j.bolt').setLevel(logging.DEBUG)
@@ -21,12 +22,9 @@ def graph_fixture() -> Generator[MCQGraph, None, None]:
         Generator[MCQGraph]: MCQGraph object that connects via driver to database.
     """
     load_dotenv()
-    graph = Neo4JGraph(
-        os.getenv('NEO4J_URI'), 'neo4j', os.getenv('NEO4J_PASSWORD')
-    )
+    graph = Neo4JGraph(URI, 'neo4j', os.getenv('NEO4J_PASSWORD'))
     yield graph
     graph.delete_all()
-    graph.close()
 
 
 @pytest.fixture(name='single_node_graph')
