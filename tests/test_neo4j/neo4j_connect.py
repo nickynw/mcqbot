@@ -7,6 +7,7 @@ from neo4j import GraphDatabase
 
 load_dotenv()
 
+
 def try_connections():
     """Attempts to find a working URI as the working URI changes between testing environments."""
     uri = None
