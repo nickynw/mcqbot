@@ -6,26 +6,24 @@ from typing import Generator
 import pytest
 from app.data.mcq_graph import MCQGraph
 from app.data.neo4j_graph import Neo4JGraph
-from app.models import MCQNode
 from dotenv import load_dotenv
 from tests.test_templates.test_mcq_graph import TestMCQGraph
 
 logging.getLogger('neo4j.bolt').setLevel(logging.DEBUG)
 
-load_dotenv()
-neo4j_uri = os.getenv('NEO4J_URI')
-neo4j_password = os.getenv('NEO4J_PASSWORD')
-
 
 @pytest.fixture(name='graph')
 def graph_fixture() -> Generator[MCQGraph, None, None]:
     """
-    Creates fixtures MCQGraph object to work with
+    Creates Neo4jGraph object fixture for tests to work with MCQGraph test template
 
     Yields:
         Generator[MCQGraph]: MCQGraph object that connects via driver to database.
     """
-    graph = Neo4JGraph(neo4j_uri, 'neo4j', neo4j_password)
+    load_dotenv()
+    graph = Neo4JGraph(
+        os.getenv('NEO4J_URI'), 'neo4j', os.getenv('NEO4J_PASSWORD')
+    )
     yield graph
     graph.delete_all()
     graph.close()

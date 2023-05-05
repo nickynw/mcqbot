@@ -1,5 +1,6 @@
 """Test the MCQ Generator Class with an Networkx Graph Database"""
 from typing import Generator
+
 import pytest
 from app.data.mcq_graph import MCQGraph
 from app.data.nx_graph import NXGraph
@@ -19,10 +20,15 @@ def graph_fixture() -> Generator[MCQGraph, None, None]:
     yield graph
     graph.delete_all()
 
-@pytest.mark.usefixtures('graph',  'complex_graph')
+
+@pytest.mark.usefixtures('graph', 'complex_graph')
 def test_mcq_generator_with_nx(complex_graph):
     """A test to show that the MCQ generator is working correctly."""
 
     mcq = MCQGenerator(complex_graph, seed=3)
     output = mcq.generate()
-    assert output == MCQ(answer='Hola', topic='Greetings', choices=['Wordsyou later', 'Hola', 'Goodbye', 'Blah'])
+    assert output == MCQ(
+        answer='Hola',
+        topic='Greetings',
+        choices=['Wordsyou later', 'Hola', 'Goodbye', 'Blah'],
+    )

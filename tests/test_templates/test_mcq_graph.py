@@ -15,7 +15,7 @@ logging.getLogger('neo4j.bolt').setLevel(logging.DEBUG)
 
 class TestMCQGraph:
     """Test class for MCQGraph Base Class containing tests to run on all inheriting classes."""
-    
+
     def test_has_name(self, single_node_graph: MCQGraph):
         """Tests whether the has_name function can successfully check a node exists."""
         assert single_node_graph.get_node('Sample Node 0')
@@ -71,41 +71,60 @@ class TestMCQGraph:
 
     def test_random_relationship(self, simple_relationships_graph: MCQGraph):
         """Tests whether we can grab a random relationship with different random seeds"""
-        assert (
-            simple_relationships_graph.random_relationship(seed=1)
-            == MCQRelationship(
-                **{
-                    'answer_node': 'Sample Node 1',
-                    'type': 'is_linked_to',
-                    'topic_node': 'Sample Node 2',
-                }
-            )
+        assert simple_relationships_graph.random_relationship(
+            seed=1
+        ) == MCQRelationship(
+            **{
+                'answer_node': 'Sample Node 1',
+                'type': 'is_linked_to',
+                'topic_node': 'Sample Node 2',
+            }
         )
-        assert (
-            simple_relationships_graph.random_relationship(seed=5)
-            == MCQRelationship(
-                **{
-                    'answer_node': 'Sample Node 2',
-                    'type': 'is_linked_to',
-                    'topic_node': 'Sample Node 1',
-                }
-            )
+        assert simple_relationships_graph.random_relationship(
+            seed=5
+        ) == MCQRelationship(
+            **{
+                'answer_node': 'Sample Node 2',
+                'type': 'is_linked_to',
+                'topic_node': 'Sample Node 1',
+            }
         )
 
     def test_connected_nodes(self, complex_graph: MCQGraph):
         """Tests whether we correctly retrieve the nodes connected to another node"""
-        
-        connected_nodes = sorted(complex_graph.connected_nodes(MCQNode(**{'name':'Hello'})))
-        assert connected_nodes == [MCQNode(name='English', info=''),  MCQNode(name='Greetings', info=''), MCQNode(name='Words', info='')]
-    
+
+        connected_nodes = sorted(
+            complex_graph.connected_nodes(MCQNode(**{'name': 'Hello'}))
+        )
+        assert connected_nodes == [
+            MCQNode(name='English', info=''),
+            MCQNode(name='Greetings', info=''),
+            MCQNode(name='Words', info=''),
+        ]
+
     def test_related_nodes(self, complex_graph: MCQGraph):
         """Tests whether we correctly retrieve the nodes connected to another node"""
-        related_nodes = sorted(complex_graph.related_nodes(MCQRelationship(**{'answer_node':'Hello', 'type':'belongs_to','topic_node':'Greetings' })))
-        assert related_nodes == [ MCQNode(name='Good Morning', info=''), MCQNode(name='Hey', info=''), MCQNode(name='Hola', info='')]
-    
+        related_nodes = sorted(
+            complex_graph.related_nodes(
+                MCQRelationship(
+                    **{
+                        'answer_node': 'Hello',
+                        'type': 'belongs_to',
+                        'topic_node': 'Greetings',
+                    }
+                )
+            )
+        )
+        assert related_nodes == [
+            MCQNode(name='Good Morning', info=''),
+            MCQNode(name='Hey', info=''),
+            MCQNode(name='Hola', info=''),
+        ]
+
     def test_similarity_matrix(self, complex_graph: MCQGraph):
         """Tests whether we correctly retrieve the nodes connected to another node"""
-        similarity_matrix = complex_graph.similarity_matrix(MCQNode(**{'name':'Hello'}))
+        similarity_matrix = complex_graph.similarity_matrix(
+            MCQNode(**{'name': 'Hello'})
+        )
         assert similarity_matrix['Hey'] == 1.0
         assert similarity_matrix['Ciao'] == 0.25
-    
