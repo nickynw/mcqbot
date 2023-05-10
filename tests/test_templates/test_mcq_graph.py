@@ -3,8 +3,8 @@ import logging
 from typing import Dict, List
 
 import pytest
-from app.data.mcq_graph import MCQGraph
-from app.models import MCQNode, MCQRelationship
+from api.data.mcq_graph import MCQGraph
+from api.models import MCQNode, MCQRelationship
 
 pytestmark = pytest.mark.skip(
     reason='This module is not meant to be run directly, it is a template.'

@@ -1,8 +1,8 @@
 {
     "python.analysis.extraPaths": [
-        "./app/utils",
-        "./app",
-        "./app/data",
+        "./api/utils",
+        "./api",
+        "./api/data",
         "./tests/"
     ],
     "python.pythonPath": "venv/bin/python",

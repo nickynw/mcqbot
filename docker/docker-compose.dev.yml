@@ -39,16 +39,16 @@ services:
         condition: service_healthy
     image: tests:latest
     container_name: mcqbot-tests
-  app:
+  api:
     networks:
       - mcqbot
     build:
       context: ..
-      dockerfile: docker/app.Dockerfile
+      dockerfile: docker/api.Dockerfile
     ports:
       - "80:80"
-    image: app:latest
-    container_name: mcqbot-app
+    image: api:latest
+    container_name: mcqbot-api
     depends_on:
       neo4j:
         condition: service_healthy

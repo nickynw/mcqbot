@@ -3,9 +3,9 @@ import random
 from collections import Counter
 from typing import Any, Callable, Dict, List, Optional, Union
 
-from app.data.mcq_graph import MCQGraph
-from app.models import MCQNode, MCQRelationship
-from app.utils.log_util import create_logger
+from api.data.mcq_graph import MCQGraph
+from api.models import MCQNode, MCQRelationship
+from api.utils.log_util import create_logger
 from neo4j import GraphDatabase, Result, Session
 
 logger = create_logger(__name__)

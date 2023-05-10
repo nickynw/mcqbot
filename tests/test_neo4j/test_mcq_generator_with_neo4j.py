@@ -3,10 +3,10 @@ import os
 from typing import Generator
 
 import pytest
-from app.data.mcq_graph import MCQGraph
-from app.data.neo4j_graph import Neo4JGraph
-from app.models import MCQ
-from app.utils.mcq_generator import MCQGenerator
+from api.data.mcq_graph import MCQGraph
+from api.data.neo4j_graph import Neo4JGraph
+from api.models import MCQ
+from api.utils.mcq_generator import MCQGenerator
 from tests.test_neo4j.neo4j_connect import URI
 
 

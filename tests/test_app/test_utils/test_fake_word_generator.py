@@ -1,5 +1,5 @@
 """Test the Fake Word Generator Class"""
-from app.utils.fake_word_generator import FakeWordGenerator
+from api.utils.fake_word_generator import FakeWordGenerator
 
 
 def test_fake_word_generator():

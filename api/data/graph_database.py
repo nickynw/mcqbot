@@ -1,7 +1,7 @@
 # pylint: disable=duplicate-code
 """Provides a sample graph for use in the main app."""
-from app.data.nx_graph import NXGraph
-from app.models import MCQNode, MCQRelationship
+from api.data.nx_graph import NXGraph
+from api.models import MCQNode, MCQRelationship
 
 
 def new_graph() -> NXGraph:

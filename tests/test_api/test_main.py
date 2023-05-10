@@ -1,9 +1,9 @@
 """Test the basic fastapi template"""
 
-from app.main import app
+from api.main import api
 from fastapi.testclient import TestClient
 
-client = TestClient(app)
+client = TestClient(api)
 
 
 def test_live():

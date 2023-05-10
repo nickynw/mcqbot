@@ -1,21 +1,21 @@
 """A basic bare main file for an api using fastapi"""
 # pylint: disable=unused-argument
 
-from app.data.graph_database import new_graph
-from app.models import MCQ
-from app.utils.mcq_generator import MCQGenerator
+from api.data.graph_database import new_graph
+from api.models import MCQ
+from api.utils.mcq_generator import MCQGenerator
 from fastapi import FastAPI, Request
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
 limiter = Limiter(key_func=get_remote_address)
-app = FastAPI()
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+api = FastAPI()
+api.state.limiter = limiter
+api.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
-@app.get('/live')
+@api.get('/live')
 async def live(request: Request) -> dict:
     """
     Basic live test for api
@@ -26,7 +26,7 @@ async def live(request: Request) -> dict:
     return {}
 
 
-@app.get('/')
+@api.get('/')
 @limiter.limit('5/second')
 async def root(request: Request, response_model=MCQ) -> MCQ:
     """

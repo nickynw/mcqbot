@@ -2,8 +2,8 @@
 """Provides fixtures shared between different test files."""
 from typing import Dict, List
 
-from app.data.mcq_graph import MCQGraph
-from app.models import MCQNode, MCQRelationship
+from api.data.mcq_graph import MCQGraph
+from api.models import MCQNode, MCQRelationship
 
 
 def fill_graph(graph: MCQGraph, data: Dict[str, List[str]]) -> MCQGraph:
