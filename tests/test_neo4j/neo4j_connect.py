@@ -12,17 +12,20 @@ def try_connections():
     try:
         uri = 'bolt://neo4j:7687'
         Neo4JGraph(uri, 'neo4j', 'password')
+        return uri
     except Exception:
         print('%s connection failed. Attempting different URI...' % uri)
     try:
 
         uri = 'bolt://localhost:7687'
         Neo4JGraph(uri, 'neo4j', 'password')
+        return uri
     except Exception:
         print('%s connection failed. Attempting different URI...' % uri)
     try:
         uri = 'bolt://127.0.0.1:7687'
         Neo4JGraph(uri, 'neo4j', 'password')
+        return uri
     except Exception:
         print('%s connection failed. Attempting different URI...' % uri)
     if uri is None:
