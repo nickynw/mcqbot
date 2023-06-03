@@ -125,7 +125,7 @@ jobs:
 
       - name: Get Neo4j Connection Details
         run: |
-          NEO4J_BOLT_ADDRESS=$(cypher-shell --a=neo4j://localhost:7687 --u=neo4j --p=password --format plain "CALL dbms.listeningBoltAddresses()")
+          NEO4J_BOLT_ADDRESS=$(cypher-shell --a=neo4j://localhost:7687 --u=neo4j --p=$NEO4J_PASSWORD --format plain "CALL dbms.listeningBoltAddresses()")
           echo "Neo4j Bolt Address: $NEO4J_BOLT_ADDRESS"
 
       - name: Restore venv directory from cache
