@@ -31,7 +31,10 @@ def try_connections():
             output = uri
             print('%s used for working URI.' % uri)
         except Exception as e:
-            print('%s connection failed with exception %s. Attempting different URI...' % (uri, str(e)))
+            print(
+                '%s connection failed with exception %s. Attempting different URI...'
+                % (uri, str(e))
+            )
     if output is None:
         raise Exception('All uri connection attempts failed.')
     return output
