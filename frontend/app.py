@@ -1,12 +1,12 @@
-"Basic frontend to serve the Graph Data into an MCQ format"
+"""Basic frontend to serve the Graph Data into an MCQ format"""
 import requests
-from flask import Flask, render_template, Response
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
 
 @app.route('/')
-def home() -> Response:
+def home() -> str:
     """
     Renders and displays the homepage.
 
@@ -21,7 +21,7 @@ def home() -> Response:
     except Exception:
         pass
     return render_template(
-            'error.html',
+        'error.html',
     )
 
 

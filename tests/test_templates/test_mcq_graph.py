@@ -3,7 +3,7 @@ import logging
 from typing import Dict, List
 
 import pytest
-from api.data.mcq_graph import MCQGraph
+from api.graphs.mcq_graph import MCQGraph
 from api.models import MCQNode, MCQRelationship
 
 pytestmark = pytest.mark.skip(

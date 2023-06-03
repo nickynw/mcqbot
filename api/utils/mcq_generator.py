@@ -3,7 +3,7 @@
 import random
 from typing import List, Optional, Tuple
 
-from api.data.mcq_graph import MCQGraph
+from api.graphs.mcq_graph import MCQGraph
 from api.models import MCQ, MCQRelationship
 from api.utils.fake_word_generator import FakeWordGenerator
 

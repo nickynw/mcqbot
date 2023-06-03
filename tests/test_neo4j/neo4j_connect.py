@@ -1,6 +1,6 @@
 """Module containing utility functions of neo4j database connection"""
 # pylint: disable=broad-exception-caught broad-exception-raised
-from api.data.neo4j_graph import Neo4JGraph
+from api.graphs.neo4j_graph import Neo4JGraph
 from dotenv import load_dotenv
 
 load_dotenv()

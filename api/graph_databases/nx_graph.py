@@ -4,7 +4,7 @@ from collections import Counter
 from typing import Dict, List, Optional, Union
 
 import networkx as nx
-from api.data.mcq_graph import MCQGraph
+from api.graphs.mcq_graph import MCQGraph
 from api.models import MCQNode, MCQRelationship
 from api.utils.log_util import create_logger
 

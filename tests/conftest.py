@@ -2,7 +2,7 @@
 from typing import Dict, Generator, List
 
 import pytest
-from api.data.mcq_graph import MCQGraph
+from api.graphs.mcq_graph import MCQGraph
 from api.models import MCQNode, MCQRelationship
 from tests.test_utils import fill_graph
 

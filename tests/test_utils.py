@@ -2,7 +2,7 @@
 """Provides fixtures shared between different test files."""
 from typing import Dict, List
 
-from api.data.mcq_graph import MCQGraph
+from api.graphs.mcq_graph import MCQGraph
 from api.models import MCQNode, MCQRelationship
 
 
