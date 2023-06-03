@@ -123,19 +123,6 @@ jobs:
       - name: Start Neo4j service
         run: docker-compose -f docker/docker-compose.dev.yml --env-file .env up -d neo4j
 
-      - name: Install cypher-shell
-        run: |
-          curl -L -o cypher-shell.deb https://debian.neo4j.com//neo4j.com.gpg.key
-          sudo apt-key add neo4j.com.gpg.key
-          echo 'deb http://debian.neo4j.com stable latest' | sudo tee -a /etc/apt/sources.list.d/neo4j.list
-          sudo apt-get update
-          sudo apt-get install -y cypher-shell
-
-      - name: Get Neo4j Connection Details
-        run: |
-          NEO4J_BOLT_ADDRESS=$(cypher-shell --a=neo4j://localhost:7687 --u=neo4j --p="$NEO4J_PASSWORD" --format plain "CALL dbms.listeningBoltAddresses()")
-          echo "Neo4j Bolt Address: $NEO4J_BOLT_ADDRESS"
-
       - name: Restore venv directory from cache
         uses: actions/cache@v2
         with:
