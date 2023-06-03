@@ -11,6 +11,7 @@ def try_connections():
     output = None
     for uri in [
         'bolt://neo4j:7687',
+        'bolt://mcqbot-neo4j:7687',
         'bolt://localhost:7687',
         'bolt://127.0.0.1:7687',
         'bolt://0.0.0.0:7687',
