@@ -13,7 +13,6 @@ def try_connections():
         'bolt://neo4j:7687',
         'bolt://localhost:7687',
         'bolt://127.0.0.1:7687',
-
     ]:
         try:
             Neo4JGraph(uri, 'neo4j', 'password')
