@@ -8,22 +8,14 @@ load_dotenv()
 
 def try_connections():
     """Attempts to find a working URI as the working URI changes between testing environments."""
-    for uri in [
-        'bolt://neo4j:7687/',
-        'bolt://mcqbot-neo4j:7687',
-        'bolt://localhost:7687',
-        'bolt://127.0.0.1:7687',
-        'bolt://0.0.0.0:7687',
-        'neo4j://neo4j:7687',
-        'neo4j://localhost:7687',
-        'neo4j://127.0.0.1:7687',
-        'neo4j://0.0.0.0:7687',
-    ]:
-        try:
-            Neo4JGraph(uri, 'neo4j', 'password')
-            return uri
-        except Exception:
-            continue
+    for scheme in ['bolt', 'bolt+ssc', 'bolt+s', 'neo4j', 'neo4j+ssc', 'neo4j+s', 'mcqbot-neo4j']:
+        for host in ['host', 'neo4j', 'mcqbot-neo4j', 'localhost', '127.0.0.1', '0.0.0.0']:
+            uri = scheme+'://'+host+':7687'
+            try:
+                Neo4JGraph(uri, 'neo4j', 'password')
+                return uri
+            except Exception:
+                continue
     raise Exception('All uri connection attempts failed.')
 
 

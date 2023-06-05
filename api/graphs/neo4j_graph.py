@@ -60,12 +60,13 @@ class Neo4JGraph(MCQGraph):
 
     def __init__(self, uri, user, password):
         super()
-        self.driver = self.create_driver(uri, user, password)
+        self.driver = self.create_driver(uri, user ,password)
         with self.driver.session() as session:
             run(
                 session,
                 query='CREATE CONSTRAINT IF NOT EXISTS FOR (e:Entity) REQUIRE e.name IS UNIQUE;',
             )
+
 
     def close(self):
         self.driver.close()
@@ -75,16 +76,15 @@ class Neo4JGraph(MCQGraph):
         try:
             driver = GraphDatabase.driver(uri, auth=(user, password))
             with driver.session() as session:
-                result = session.run('RETURN 1')
+                result = session.run("RETURN 1")
                 record = result.single()
-                logger.info(
-                    'Successfully created driver for connection %s' % uri
-                )
+                logger.info('Successfully created driver for connection %s' % uri)
                 if record[0] == 1:
                     return driver
         except Exception as e:
-            logger.info('Unable to create neo4j connection: %s' % e.args[0])
+            logger.info("Unable to create neo4j connection: %s" % e.args[0])
             raise e
+
 
     def delete_all(self):
         with self.driver.session() as session:
