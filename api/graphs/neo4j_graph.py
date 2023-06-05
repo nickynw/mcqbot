@@ -60,33 +60,40 @@ class Neo4JGraph(MCQGraph):
 
     def __init__(self, uri, user, password):
         super()
-        self.driver = self.create_driver(uri, user, password)
+        self.create_driver(uri, user, password)
         with self.driver.session() as session:
             run(
                 session,
                 query='CREATE CONSTRAINT IF NOT EXISTS FOR (e:Entity) REQUIRE e.name IS UNIQUE;',
             )
 
+    def create_driver(self, uri, user, password):
+        """
+        Creates a driver objects and checks a connection can be made successfully.
+
+        Args:
+            uri (str): URI for connection
+            user (str): username for authentication
+            password (str): password for authentication
+        Raises:
+            e: The exception raised when using the provided values for connection.
+        """
+        try:
+            self.driver = GraphDatabase.driver(uri, auth=(user, password))
+            with self.driver.session() as session:
+                session.run('RETURN 1')
+                logger.info(
+                    'Successfully created driver for connection %s', uri
+                )
+        except Exception as e:
+            logger.info(
+                'Unable to connect to %s with exception: %s', uri, e.args[0]
+            )
+            raise e
+
     def close(self):
         self.driver.close()
         logger.info('Neo4J Connection closed.')
-
-    def create_driver(self, uri, user, password):
-        try:
-            driver = GraphDatabase.driver(uri, auth=(user, password))
-            with driver.session() as session:
-                result = session.run('RETURN 1')
-                record = result.single()
-                logger.info(
-                    'Successfully created driver for connection %s' % uri
-                )
-                if record[0] == 1:
-                    return driver
-        except Exception as e:
-            logger.info(
-                'Unable to connect to %s with exception: %s' % (uri, e.args[0])
-            )
-            raise e
 
     def delete_all(self):
         with self.driver.session() as session:

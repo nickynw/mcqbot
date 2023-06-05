@@ -1,4 +1,4 @@
-"""Object for acessing neo4j graph database"""
+"""Object for accessing neo4j graph database"""
 import random
 from collections import Counter
 from typing import Dict, List, Optional, Union

@@ -55,7 +55,7 @@ jobs:
       if: always()
       run: |
         source venv/bin/activate
-        poetry run pylint frontend api tests
+        poetry run pylint frontend/* api/* tests/*
      
   test-app:
     needs: code-audit
