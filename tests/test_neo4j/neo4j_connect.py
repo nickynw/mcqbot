@@ -10,15 +10,9 @@ def try_connections():
     """Attempts to find a working URI as the working URI changes between testing environments."""
     for scheme in [
         'bolt',
-        'bolt+ssc',
-        'bolt+s',
         'neo4j',
-        'neo4j+ssc',
-        'neo4j+s',
-        'mcqbot-neo4j',
     ]:
         for host in [
-            'host',
             'neo4j',
             'mcqbot-neo4j',
             'localhost',
