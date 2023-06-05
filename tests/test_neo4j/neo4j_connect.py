@@ -37,7 +37,7 @@ def try_connections():
             )
     if output is None:
         raise Exception('All uri connection attempts failed.')
-    return output
-
+    else:
+        raise Exception(output)
 
 URI = try_connections()
