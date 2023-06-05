@@ -83,7 +83,9 @@ class Neo4JGraph(MCQGraph):
                 if record[0] == 1:
                     return driver
         except Exception as e:
-            logger.info('Unable to connect to %s with exception: %s' % (uri, e.args[0]))
+            logger.info(
+                'Unable to connect to %s with exception: %s' % (uri, e.args[0])
+            )
             raise e
 
     def delete_all(self):
