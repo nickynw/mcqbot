@@ -40,4 +40,5 @@ def try_connections():
     else:
         raise Exception(output)
 
+
 URI = try_connections()
