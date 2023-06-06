@@ -1,7 +1,10 @@
 """Basic frontend to serve the Graph Data into an MCQ format"""
 import requests
 from flask import Flask, render_template
+from dotenv import load_dotenv
+import os 
 
+load_dotenv()
 app = Flask(__name__)
 
 
@@ -14,11 +17,12 @@ def home() -> str:
         flask.Response: A Flask HTML template
     """
     try:
-        response = requests.get('http://127.0.0.1:8000/', timeout=1)
+        response = requests.get(os.environ['API_URL'], timeout=1)
         if response.status_code == 200:
             data = response.json()
             return render_template('home.html', **data)
-    except Exception:
+    except Exception as e:
+        print(str(e))
         pass
     return render_template(
         'error.html',

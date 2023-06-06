@@ -12,7 +12,7 @@ RUN poetry config virtualenvs.create false
 
 RUN echo "Installing dependencies..."
 
-RUN poetry install --no-dev --no-interaction --no-ansi --verbose
+RUN poetry install --with nx,api --no-interaction --no-ansi --verbose
 
 ENV MODULE_NAME=api.main
 ENV APP_MODULE=api.main:api
