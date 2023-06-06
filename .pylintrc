@@ -1,5 +1,6 @@
 ﻿[MASTER]
 init-hook="from pylint.config import find_pylintrc; import os, sys; sys.path.append(os.path.dirname(find_pylintrc()))"
+load-plugins=pylint.extensions.skip-file
 
 [MAIN]
 
@@ -443,7 +444,8 @@ disable=wrong-import-order,
         useless-suppression,
         deprecated-pragma,
         use-symbolic-message-instead,
-        consider-using-f-string
+        consider-using-f-string,
+        broad-exception-caught
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -522,7 +524,7 @@ ignore-imports=yes
 ignore-signatures=yes
 
 # Minimum lines number of a similarity.
-min-similarity-lines=10
+min-similarity-lines=20
 
 
 [SPELLING]

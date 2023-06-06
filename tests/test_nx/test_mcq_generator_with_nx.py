@@ -2,8 +2,8 @@
 from typing import Generator
 
 import pytest
-from api.data.mcq_graph import MCQGraph
-from api.data.nx_graph import NXGraph
+from api.graphs.mcq_graph import MCQGraph
+from api.graphs.nx_graph import NXGraph
 from api.models import MCQ
 from api.utils.mcq_generator import MCQGenerator
 

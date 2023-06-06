@@ -4,8 +4,8 @@ import os
 from typing import Generator
 
 import pytest
-from api.data.mcq_graph import MCQGraph
-from api.data.neo4j_graph import Neo4JGraph
+from api.graphs.mcq_graph import MCQGraph
+from api.graphs.neo4j_graph import Neo4JGraph
 from dotenv import load_dotenv
 from tests.test_neo4j.neo4j_connect import URI
 from tests.test_templates.test_mcq_graph import TestMCQGraph

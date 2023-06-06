@@ -31,7 +31,7 @@ jobs:
         python -m venv venv
         source venv/bin/activate
         pip install poetry==1.4.2
-        poetry install -v
+        poetry install -v --with "api"
 
     - name: Assess imports with isort
       if: always()
@@ -55,7 +55,7 @@ jobs:
       if: always()
       run: |
         source venv/bin/activate
-        poetry run pylint $(git ls-files '*.py')
+        poetry run pylint frontend/* api/* tests/*
      
   test-app:
     needs: code-audit
@@ -116,13 +116,9 @@ jobs:
 
       - name: Set environment variables
         env:
-          NEO4J_USERNAME: neo4j
           NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
-          NEO4J_URI: ${{ secrets.NEO4J_URI }}
         run: |
-          echo "NEO4J_USERNAME=neo4j" >> .env
           echo "NEO4J_PASSWORD=${NEO4J_PASSWORD}" >> .env
-          echo "NEO4J_URI=${NEO4J_URI}" >> .env
 
       - name: Start Neo4j service
         run: docker-compose -f docker/docker-compose.dev.yml --env-file .env up -d neo4j

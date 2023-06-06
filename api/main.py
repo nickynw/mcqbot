@@ -1,7 +1,7 @@
 """A basic bare main file for an api using fastapi"""
 # pylint: disable=unused-argument
 
-from api.data.graph_database import new_graph
+from api.graphs.graph_database import new_graph
 from api.models import MCQ
 from api.utils.mcq_generator import MCQGenerator
 from fastapi import FastAPI, Request

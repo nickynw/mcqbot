@@ -1,6 +1,6 @@
 # pylint: disable=duplicate-code
 """Provides a sample graph for use in the main app."""
-from api.data.nx_graph import NXGraph
+from api.graphs.nx_graph import NXGraph
 from api.models import MCQNode, MCQRelationship
 
 

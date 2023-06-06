@@ -3,7 +3,7 @@ import random
 from collections import Counter
 from typing import Any, Callable, Dict, List, Optional, Union
 
-from api.data.mcq_graph import MCQGraph
+from api.graphs.mcq_graph import MCQGraph
 from api.models import MCQNode, MCQRelationship
 from api.utils.log_util import create_logger
 from neo4j import GraphDatabase, Result, Session
@@ -60,13 +60,36 @@ class Neo4JGraph(MCQGraph):
 
     def __init__(self, uri, user, password):
         super()
-        self.driver = GraphDatabase.driver(uri, auth=(user, password))
+        self.create_driver(uri, user, password)
         with self.driver.session() as session:
             run(
                 session,
                 query='CREATE CONSTRAINT IF NOT EXISTS FOR (e:Entity) REQUIRE e.name IS UNIQUE;',
             )
-            logger.info('New MCQGraph Object created.')
+
+    def create_driver(self, uri, user, password):
+        """
+        Creates a driver objects and checks a connection can be made successfully.
+
+        Args:
+            uri (str): URI for connection
+            user (str): username for authentication
+            password (str): password for authentication
+        Raises:
+            e: The exception raised when using the provided values for connection.
+        """
+        try:
+            self.driver = GraphDatabase.driver(uri, auth=(user, password))
+            with self.driver.session() as session:
+                session.run('RETURN 1')
+                logger.info(
+                    'Successfully created driver for connection %s', uri
+                )
+        except Exception as e:
+            logger.info(
+                'Unable to connect to %s with exception: %s', uri, e.args[0]
+            )
+            raise e
 
     def close(self):
         self.driver.close()
