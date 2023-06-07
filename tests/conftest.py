@@ -2,8 +2,8 @@
 from typing import Dict, Generator, List
 
 import pytest
-from api.graphs.mcq_graph import MCQGraph
-from api.models import MCQNode, MCQRelationship
+from app.graphs.mcq_graph import MCQGraph
+from app.models import MCQNode, MCQRelationship
 
 
 @pytest.fixture(name='test_data')

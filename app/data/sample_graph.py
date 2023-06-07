@@ -1,7 +1,8 @@
 # pylint: disable=duplicate-code
 """Provides a sample graph for use in the main app."""
 from typing import Dict, List
-from api.graphs.nx_graph import NXGraph
+
+from app.graphs.nx_graph import NXGraph
 
 
 def generate_graph() -> NXGraph:

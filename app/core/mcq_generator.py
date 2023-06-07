@@ -3,9 +3,9 @@
 import random
 from typing import List, Optional, Tuple
 
-from api.graphs.mcq_graph import MCQGraph
-from api.models import MCQ, MCQRelationship
-from api.utils.fake_word_generator import FakeWordGenerator
+from app.core.fake_word_generator import FakeWordGenerator
+from app.graphs.mcq_graph import MCQGraph
+from app.models import MCQ, MCQRelationship
 
 
 class MCQGenerator:

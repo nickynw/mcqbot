@@ -1,8 +1,8 @@
 """Object for acessing neo4j graph database"""
 from typing import Dict, List, Optional, Union
 
-from api.models import MCQNode, MCQRelationship
-from api.utils.log_util import create_logger
+from app.graphs.log_util import create_logger
+from app.models import MCQNode, MCQRelationship
 
 logger = create_logger(__name__)
 

@@ -2,10 +2,10 @@
 from typing import Generator
 
 import pytest
-from api.graphs.mcq_graph import MCQGraph
-from api.graphs.nx_graph import NXGraph
-from api.models import MCQ
-from api.utils.mcq_generator import MCQGenerator
+from app.core.mcq_generator import MCQGenerator
+from app.graphs.mcq_graph import MCQGraph
+from app.graphs.nx_graph import NXGraph
+from app.models import MCQ
 
 
 @pytest.fixture(name='graph')

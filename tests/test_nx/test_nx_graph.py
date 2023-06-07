@@ -3,8 +3,8 @@ import logging
 from typing import Generator
 
 import pytest
-from api.graphs.mcq_graph import MCQGraph
-from api.graphs.nx_graph import NXGraph
+from app.graphs.mcq_graph import MCQGraph
+from app.graphs.nx_graph import NXGraph
 from tests.test_templates.test_mcq_graph import TestMCQGraph
 
 logging.getLogger('neo4j.bolt').setLevel(logging.DEBUG)
