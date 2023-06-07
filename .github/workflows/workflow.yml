@@ -31,7 +31,7 @@ jobs:
         python -m venv venv
         source venv/bin/activate
         pip install poetry==1.4.2
-        poetry install -v --with "api"
+        poetry install -v
 
     - name: Assess imports with isort
       if: always()
@@ -55,7 +55,7 @@ jobs:
       if: always()
       run: |
         source venv/bin/activate
-        poetry run pylint frontend/* api/* tests/*
+        poetry run pylint app/* tests/*
      
   test-app:
     needs: code-audit

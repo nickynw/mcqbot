@@ -1,20 +1,20 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
 
-WORKDIR /api
+WORKDIR /app
 
 RUN pip install "poetry==1.4.2"
 
-COPY ../pyproject.toml /api/pyproject.toml
+COPY ../pyproject.toml /app/pyproject.toml
 
-COPY ../api ./api
+COPY ../app ./app
 
 RUN poetry config virtualenvs.create false
 
 RUN echo "Installing dependencies..."
 
-RUN poetry install --with nx,api --no-interaction --no-ansi --verbose
+RUN poetry install --with nx --no-interaction --no-ansi --verbose
 
-ENV MODULE_NAME=api.main
-ENV APP_MODULE=api.main:api
+ENV MODULE_NAME=app.main
+ENV APP_MODULE=app.main:app
 
-CMD ["uvicorn", "api.main:api", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]

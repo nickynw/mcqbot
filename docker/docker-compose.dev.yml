@@ -47,16 +47,4 @@ services:
       - "8080:8080"
     image: api:latest
     container_name: mcqbot-api
-  frontend:
-    networks:
-      - mcqbot
-    environment:
-      API_URL: ${PROD_URL}
-    ports:
-      - '5000:5000'
-    build:
-      context: ..
-      dockerfile: docker/frontend.Dockerfile
-    image: frontend:latest
-    container_name: mcqbot-frontend
     
