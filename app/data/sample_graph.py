@@ -1,12 +1,13 @@
 # pylint: disable=duplicate-code
 """Provides a sample graph for use in the main app."""
-from api.graphs.nx_graph import NXGraph
-from api.models import MCQNode, MCQRelationship
+from typing import Dict, List
+
+from app.graphs.nx_graph import NXGraph
 
 
-def new_graph() -> NXGraph:
+def generate_graph() -> NXGraph:
     """Provides a sample graph to use."""
-    data = {
+    data: Dict[str, List[str]] = {
         'Neurotransmitter': [
             'Serotonin',
             'Glycine',
@@ -39,30 +40,6 @@ def new_graph() -> NXGraph:
         'GABA Receptor': ['GABA', 'Muscimol'],
         'Muscimol': [],
     }
-    nodes = [MCQNode(**{'name': key}) for key in data]
-    relationships = []
-    for key, value in data.items():
-        if isinstance(value, list):
-            for item in value:
-                relationships.append(
-                    MCQRelationship(
-                        **{
-                            'answer_node': key,
-                            'topic_node': item,
-                            'type': 'includes',
-                        }
-                    )
-                )
-                relationships.append(
-                    MCQRelationship(
-                        **{
-                            'topic_node': key,
-                            'answer_node': item,
-                            'type': 'belongs_to',
-                        }
-                    )
-                )
     graph = NXGraph()
-    graph.create_nodes(nodes=nodes)
-    graph.create_relationships(relationships=relationships)
+    graph.fill_graph(data)
     return graph

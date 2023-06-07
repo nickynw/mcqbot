@@ -1,12 +1,12 @@
 FROM python:3.9
 
-WORKDIR /api
+WORKDIR /app
 
 RUN pip install "poetry==1.4.2"
 
-COPY ../pyproject.toml /api/pyproject.toml
+COPY ../pyproject.toml /app/pyproject.toml
 
-COPY ../api ./api
+COPY ../app ./app
 
 COPY ../tests ./tests
 

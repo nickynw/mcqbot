@@ -4,9 +4,9 @@ from collections import Counter
 from typing import Dict, List, Optional, Union
 
 import networkx as nx
-from api.graphs.mcq_graph import MCQGraph
-from api.models import MCQNode, MCQRelationship
-from api.utils.log_util import create_logger
+from app.graphs.log_util import create_logger
+from app.graphs.mcq_graph import MCQGraph
+from app.models import MCQNode, MCQRelationship
 
 logger = create_logger(__name__)
 

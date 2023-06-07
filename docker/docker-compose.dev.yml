@@ -44,11 +44,7 @@ services:
       context: ..
       dockerfile: docker/api.Dockerfile
     ports:
-      - "80:80"
+      - "8080:8080"
     image: api:latest
     container_name: mcqbot-api
-    depends_on:
-      neo4j:
-        condition: service_healthy
-
     

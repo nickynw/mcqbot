@@ -1,6 +1,8 @@
 """Module containing utility functions of neo4j database connection"""
 # pylint: disable=broad-exception-caught broad-exception-raised
-from api.graphs.neo4j_graph import Neo4JGraph
+import os
+
+from app.graphs.neo4j_graph import Neo4JGraph
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -21,7 +23,7 @@ def try_connections():
         ]:
             uri = scheme + '://' + host + ':7687'
             try:
-                Neo4JGraph(uri, 'neo4j', 'password')
+                Neo4JGraph(uri, 'neo4j', os.environ['NEO4J_PASSWORD'])
                 return uri
             except Exception:
                 continue

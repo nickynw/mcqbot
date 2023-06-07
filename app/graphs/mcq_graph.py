@@ -1,8 +1,8 @@
 """Object for acessing neo4j graph database"""
 from typing import Dict, List, Optional, Union
 
-from api.models import MCQNode, MCQRelationship
-from api.utils.log_util import create_logger
+from app.graphs.log_util import create_logger
+from app.models import MCQNode, MCQRelationship
 
 logger = create_logger(__name__)
 
@@ -112,3 +112,38 @@ class MCQGraph:
             Dict[str, float]: simlarity values for each node key
         """
         raise NotImplementedError()
+
+    def fill_graph(self, data: Dict[str, List[str]]):
+        """
+        Fills graph with provided dictionary input
+
+        Args:
+            data (Dict[str, List[str]]): input data
+
+        """
+        nodes = [MCQNode(**{'name': key}) for key in data]
+        relationships = []
+        for key, value in data.items():
+            if isinstance(value, list):
+                for item in value:
+                    relationships.append(
+                        MCQRelationship(
+                            **{
+                                'answer_node': key,
+                                'topic_node': item,
+                                'type': 'includes',
+                            }
+                        )
+                    )
+                    relationships.append(
+                        MCQRelationship(
+                            **{
+                                'topic_node': key,
+                                'answer_node': item,
+                                'type': 'belongs_to',
+                            }
+                        )
+                    )
+        self.delete_all()
+        self.create_nodes(nodes=nodes)
+        self.create_relationships(relationships=relationships)
