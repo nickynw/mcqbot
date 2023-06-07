@@ -4,23 +4,6 @@ from typing import Dict, Generator, List
 import pytest
 from api.graphs.mcq_graph import MCQGraph
 from api.models import MCQNode, MCQRelationship
-from tests.test_utils import fill_graph
-
-
-@pytest.fixture(name='complex_graph')
-def complex_graph_fixture(
-    graph: MCQGraph, test_data: Dict[str, List[str]]
-) -> Generator[MCQGraph, None, None]:
-    """
-    Populates the database with sample nodes.
-
-    Args:
-        graph (Generator[MCQGraph]): An empty databases and MCQGraph driver.
-
-    Yields:
-        Generator[MCQGraph]: A database populated with sample nodes.
-    """
-    yield fill_graph(graph, test_data)
 
 
 @pytest.fixture(name='test_data')
@@ -63,6 +46,23 @@ def test_data_fixture():
         ],
     }
     return data
+
+
+@pytest.fixture(name='complex_graph')
+def complex_graph_fixture(
+    graph: MCQGraph, test_data: Dict[str, List[str]]
+) -> Generator[MCQGraph, None, None]:
+    """
+    Populates the database with sample nodes.
+
+    Args:
+        graph (Generator[MCQGraph]): An empty databases and MCQGraph driver.
+
+    Yields:
+        Generator[MCQGraph]: A database populated with sample nodes.
+    """
+    graph.fill_graph(test_data)
+    yield graph
 
 
 @pytest.fixture(name='simple_properties')
