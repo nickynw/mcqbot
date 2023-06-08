@@ -44,7 +44,7 @@ services:
       context: ..
       dockerfile: docker/api.Dockerfile
     ports:
-      - "8080:8080"
+      - "8000:8000"
     image: api:latest
     container_name: mcqbot-api
     

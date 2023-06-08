@@ -26,9 +26,9 @@ async def live(request: Request) -> dict:
     return {}
 
 
-@app.get('/')
+@app.get('/', response_model=MCQ, responses={200: {"model": MCQ}})
 @limiter.limit('5/second')
-async def root(request: Request, response_model=MCQ) -> MCQ:
+async def root(request: Request) -> MCQ:
     """
     Basic mcq generated at api root
 
