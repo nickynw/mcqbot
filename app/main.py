@@ -1,6 +1,6 @@
 """A basic bare main file for an api using fastapi"""
 # pylint: disable=unused-argument
-
+from fastapi.middleware.cors import CORSMiddleware
 from app.core.mcq_generator import MCQGenerator
 from app.data.sample_graph import generate_graph
 from app.models import MCQ
@@ -14,6 +14,18 @@ app = FastAPI()
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+origins = [
+    "https://main.d1vo05ddg5t68j.amplifyapp.com/",
+    "http://localhost:8000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get('/live')
 async def live(request: Request) -> dict:
@@ -26,7 +38,7 @@ async def live(request: Request) -> dict:
     return {}
 
 
-@app.get('/', response_model=MCQ, responses={200: {"model": MCQ}})
+@app.get('/', responses={200: {"model": MCQ}})
 @limiter.limit('5/second')
 async def root(request: Request) -> MCQ:
     """
