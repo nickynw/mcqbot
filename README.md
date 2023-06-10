@@ -53,19 +53,21 @@ Another core feature of this app is that distractor choices in the quiz must be 
 
 ### Data and Solution Architecture
 
-At the moment there are two options for data storage when running locally.
+At the moment there are two options for data storage when running locally:
+
 - NX (Networkx) - A variable is used to store the graph database as an object locally (Should not be used on large datasets).
-- Neo4j - A graph database
-These are connected to a Fast API Application. In production I only use the Networkx local graph database because it is expensive to run a Neo4J instance and this is literally just a hobby project.
-There is a basic frontend for this application using React / Typescript / semantic react ui to demonstrate that the API is working in production, I have not made the code public for this as it is out of the scope of this project.
+- Neo4j - A graph database that requires an instance to be running.
+
+
+These are connected to a Fast API Application. In production I only use the Networkx local graph database because it is expensive to run a Neo4J instance and this is literally just a hobby project. There is a basic frontend for this application using React / Typescript / semantic react ui to demonstrate that the API is working in production, I have not made the code public for this as it is out of the scope of this project.
 
 ## How to run this yourself:
 
 To run and test locally you can spin up three containers using Docker which will run a neo4j instance (If Neo4J is installed and running), the API itself (which you will be able to visit on https://localhost:8000) and also the entire test suite. First you will need to create your own .env file at the highest project level with the following variables, changing defaults where necessary:
-`NEO4J_URI=bolt://localhost:7687`
-`NEO4J_USERNAME=neo4j`
-`NEO4J_PASSWORD={set your password here}`
-`COMPOSE_PROJECT_NAME=mcqbot`
+- `NEO4J_URI=bolt://localhost:7687`
+- `NEO4J_USERNAME=neo4j`
+- `NEO4J_PASSWORD={set your password here}`
+- `COMPOSE_PROJECT_NAME=mcqbot`
 
 Then you can use the following command to create an image and run each container:
 - `docker-compose -f docker/docker-compose.dev.yml --env-file .env up`
