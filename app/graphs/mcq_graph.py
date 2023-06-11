@@ -146,7 +146,7 @@ class MCQGraph:
                             }
                         )
                     )
-        nodes = [MCQNode(**{'name': key}) for key in found_nodes]
+        nodes = [MCQNode(**{'name': key}) for key in sorted(found_nodes)]
         self.delete_all()
         self.create_nodes(nodes=nodes)
         self.create_relationships(relationships=relationships)
