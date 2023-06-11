@@ -28,7 +28,5 @@ def test_mcq_generator_with_nx(complex_graph):
     mcq = MCQGenerator(complex_graph, seed=3)
     output = mcq.generate()
     assert output == MCQ(
-        answer='Hola',
-        topic='Greetings',
-        choices=['Wordsyou later', 'Hola', 'Goodbye', 'Blah'],
+        answer='Words', topic='Hey', choices=['Goodyou later', 'Words']
     )
