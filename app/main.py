@@ -16,13 +16,16 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 origins = [
     'https://main.d1vo05ddg5t68j.amplifyapp.com',
+    'http://main.d1vo05ddg5t68j.amplifyapp.com',
     'http://localhost:8000',
     'https://localhost:8000',
+    'http://localhost:3000',
+    'https://localhost:3000',
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=['*'],
     allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*'],
