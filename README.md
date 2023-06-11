@@ -1,10 +1,12 @@
-## MCQBOT
+# MCQBOT
 
-MCQBOT is a simple practical project that I developed to demonstrate my proficiency in software engineering, with attention to modular design, containerisation, version control, object-orientated programming, automated testing, continuous development and code quality. (Explained in depth below) I also aim to showcase my skills in problem-solving, algorithm design, data and solution architecture. This project itself is a website that generates multiple-choice questions (MCQs) from a graph database, aiming to provide a template for people to produce tests quickly and easily. 
+To see this API being used in a basic website to generate real multiple choice questions, please follow this [link](https://main.d1vo05ddg5t68j.amplifyapp.com) (Hosted on AWS Amplify). For a guide on getting this running yourself, scroll to the last section of this readme file.
 
-To see this API being used in a basic website to generate real multiple choice questions, please follow this [link](https://main.d1vo05ddg5t68j.amplifyapp.com) (Hosted on AWS Amplify)
+MCQBOT is a simple practical project that I developed to demonstrate my proficiency in software engineering, with attention to modular design, containerisation, version control, object-orientated programming, automated testing, continuous development and code quality. (Explained in depth below) I also aim to showcase my skills in problem-solving, algorithm design, data and solution architecture. 
 
-For a guide on getting this running yourself, scroll to the bottom of this readme file.
+This project itself is a website that generates multiple-choice questions (MCQs) from a graph database. Data exists as individual nodes in the graph, when a quiz is generated, an answer is chosen, then fake distractor choices are chosen from nodes that pass a similarity threshold based on their distance in the graph from the real answer. Fake words are also generated from the full distractor list and inserted as an option.
+
+## Core Concepts
 
 ### Modular Design
 
