@@ -8,7 +8,8 @@ For a guide on getting this running yourself, scroll to the bottom of this readm
 
 ### Modular Design
 
-As the project develops I will be ensuring a modular design. This means that the different technologies that make up the stack, such as front-end, the api, and databases logic will be seperate and independently tested. Modular and reusable pydantic models are also used.
+As the project develops I will be ensuring a modular design. This means that the different technologies that make up the stack, such as front-end, the api, and databases logic will be seperate and independently tested. Pydantic is also utilised for defining data schemas that are shared between different modules.
+This means that for each service there are independent commands to run them, and independent ways to install only the required packages for that service, or alternatively methods to run and install everything at once.
 
 ### Containerisation / Dockerisation
 
@@ -29,6 +30,7 @@ Each time a pull request is made (and subsequently modified) a series of unit te
 ### Code Quality
 
 Code will be fully documented, commented where necessary, and all python language classes and functions that I have written are fully typed, ensuring that the code is both robust and easy to understand. Pydantic is also used where appropriate to provide data validation and type checking at runtime.
+Poetry is used for dependency management and package organisation. The core required packages are provided, alongside different groups of packages required depending on production/development and which services are going to be run.
 
 Every time a push is made to any branch, a number of checks run by various python packages listed below will be automatically run in a github action workflow.  The push will fail if there are any further changes or improvements suggested by these packages. This is a stringent measure to ensure that the only way code can make it into the project is if the code has been correctly formatted and reviewed locally.
 
