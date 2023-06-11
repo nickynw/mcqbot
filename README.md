@@ -1,6 +1,6 @@
 # MCQBOT
 
-To see this API being used in a basic website to generate real multiple choice questions, please follow this [link](https://main.d1vo05ddg5t68j.amplifyapp.com) (Hosted on AWS Amplify). For a guide on getting this running yourself, scroll to the last section of this readme file.
+Follow this [link](https://main.d1vo05ddg5t68j.amplifyapp.com) (Hosted on AWS Amplify) to see this API in action on a basic website. For a guide on getting this running yourself, scroll to the last section of this readme file.
 
 MCQBOT is a simple practical project that I developed to demonstrate my proficiency in software engineering, with attention to modular design, containerisation, version control, object-orientated programming, automated testing, continuous development and code quality. (Explained in depth below) I also aim to showcase my skills in problem-solving, algorithm design, data and solution architecture. 
 
