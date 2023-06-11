@@ -121,11 +121,13 @@ class MCQGraph:
             data (Dict[str, List[str]]): input data
 
         """
-        nodes = [MCQNode(**{'name': key}) for key in data]
+        found_nodes = set()
         relationships = []
         for key, value in data.items():
             if isinstance(value, list):
                 for item in value:
+                    found_nodes.add(key)
+                    found_nodes.add(item)
                     relationships.append(
                         MCQRelationship(
                             **{
@@ -144,6 +146,7 @@ class MCQGraph:
                             }
                         )
                     )
+        nodes = [MCQNode(**{'name': key}) for key in sorted(found_nodes)]
         self.delete_all()
         self.create_nodes(nodes=nodes)
         self.create_relationships(relationships=relationships)

@@ -42,6 +42,9 @@ class FakeWordGenerator:
             bool
         """
 
+        if any(x.isupper() for x in a[1:] + b):
+            return False
+
         if len(a) == 0 or len(b) == 0:
             return False
 

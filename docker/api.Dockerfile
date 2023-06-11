@@ -17,4 +17,4 @@ RUN poetry install --with nx --no-interaction --no-ansi --verbose
 ENV MODULE_NAME=app.main
 ENV APP_MODULE=app.main:app
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
