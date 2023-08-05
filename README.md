@@ -76,9 +76,12 @@ To run and test locally you can spin up three containers using Docker which will
 Then you can use the following command to create an image and run each container:
 - `docker-compose -f docker/docker-compose.dev.yml --env-file .env up`
 
-If you want to run locally on your machine without Docker you will need to set up the environment with python 3.9 installed to do so. First make sure you have poetry set up, then install necessary packages to run each service. If you wish to only work with networkx graph db without installing and running neo4j, you can remove the neo4j from the --with flag.
+If you want to run locally on your machine without Docker you will need to set up the environment with python 3.9 installed to do so. First make sure you have poetry set up, then install necessary packages to run each service. If you wish to only work with networkx graph db without installing and running neo4j, you can remove the neo4j from the --with flag. You may want to do this on a virtual environment. For example:
+- `python -m venv .venv`
+- `. .venv/bin/activate`
+Once you have the environment created set it up using these commands:
 - `pip install poetry==1.4.2`
-- `poetry run install --with nx,neo4j,code_audit`
+- `poetry install --with nx,neo4j,code_audit`
 
 To run the api, which should become available on https://localhost:8000:
 - `uvicorn app.main:app --reload --port 8000`
