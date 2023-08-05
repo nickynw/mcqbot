@@ -1,6 +1,6 @@
 """A basic bare main file for an api using fastapi"""
 # pylint: disable=unused-argument
-from app.core.mcq_generator import MCQGenerator
+from app.core.mcq_builder import MCQBuilder
 from app.data.sample_graph import generate_graph
 from app.models import MCQ
 from fastapi import FastAPI, Request
@@ -53,6 +53,6 @@ async def root(request: Request) -> MCQ:
         dict: json response
     """
     graph = generate_graph()
-    mcq = MCQGenerator(graph)
+    mcq = MCQBuilder(graph)
     output = mcq.generate()
     return output

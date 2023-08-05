@@ -3,12 +3,12 @@
 import random
 from typing import List, Optional, Tuple
 
-from app.core.fake_word_generator import FakeWordGenerator
+from app.core.fake_word_builder import FakeWordBuilder
 from app.graphs.mcq_graph import MCQGraph
 from app.models import MCQ, MCQRelationship
 
 
-class MCQGenerator:
+class MCQBuilder:
     """A class for generating a topic, answer and choices from a graph
     An edge is chosen (e.g. Sam -> Person), Sam is an 'answer', Person is a 'topic', all other valid answers are found and excluded.
     Then similar nodes that share qualities with those answers are gathered as the 'distractors'.
@@ -69,7 +69,7 @@ class MCQGenerator:
         answers, distractors = self.__collect_nodes(relationship)
 
         # create a fake blended word
-        fwg = FakeWordGenerator(pool=answers + distractors, seed=self.seed)
+        fwg = FakeWordBuilder(pool=answers + distractors, seed=self.seed)
         fakes = fwg.generate(filter_list=[answer] + distractors, limit=1)
 
         # shuffle the answer, distractors and fakes

@@ -8,14 +8,16 @@ import Levenshtein
 import pyphen
 
 
-class FakeWordGenerator:
+class FakeWordBuilder:
     """
-    This module contains code for a FakeWordGenerator, which aims to generate plausible fake words.
-    It achieves this by hyphenating an input list of words and generating permutations that are similar to the input words.
+        This module contains code for a FakeWordBuilder
+    , which aims to generate plausible fake words.
+        It achieves this by hyphenating an input list of words and generating permutations that are similar to the input words.
     """
 
-    dic_US = pyphen.Pyphen(lang='en_US')
-    dic_GB = pyphen.Pyphen(lang='en_GB')
+    # Create two pyphen dictionary class objects providing hyphenations for words
+    pyphen_US = pyphen.Pyphen(lang='en_US')
+    pyphen_GB = pyphen.Pyphen(lang='en_GB')
 
     def __init__(self, pool: List[str], seed: Optional[int] = None):
         self.seed = seed
@@ -92,9 +94,9 @@ class FakeWordGenerator:
         Returns:
             List[Tuple[str, str]]: A list of generated pairs of ways a word can be split
         """
-        pairs = list(FakeWordGenerator.dic_US.iterate(word))
+        pairs = list(FakeWordBuilder.pyphen_US.iterate(word))
         if not pairs:
-            pairs = list(FakeWordGenerator.dic_GB.iterate(word))
+            pairs = list(FakeWordBuilder.pyphen_GB.iterate(word))
 
         # Adds further permutations where consonant/vowels are split across two parts in a pair e.g. (Gree,tings), (Greet,ings)
         pairs.extend(
@@ -128,10 +130,7 @@ class FakeWordGenerator:
         random.shuffle(self.pool)
 
         for fake_word, word in itertools.product(potential_fakes, self.pool):
-            if (
-                FakeWordGenerator.__similarity_score(fake_word, word)
-                > threshold
-            ):
+            if FakeWordBuilder.__similarity_score(fake_word, word) > threshold:
                 yield fake_word
 
     def generate(

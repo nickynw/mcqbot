@@ -2,7 +2,7 @@
 from typing import Generator
 
 import pytest
-from app.core.mcq_generator import MCQGenerator
+from app.core.mcq_builder import MCQBuilder
 from app.graphs.mcq_graph import MCQGraph
 from app.graphs.nx_graph import NXGraph
 from app.models import MCQ
@@ -25,7 +25,7 @@ def graph_fixture() -> Generator[MCQGraph, None, None]:
 def test_mcq_generator_with_nx(complex_graph):
     """A test to show that the MCQ generator is working correctly."""
 
-    mcq = MCQGenerator(complex_graph, seed=3)
+    mcq = MCQBuilder(complex_graph, seed=3)
     output = mcq.generate()
     assert output == MCQ(
         answer='Goodbye',
